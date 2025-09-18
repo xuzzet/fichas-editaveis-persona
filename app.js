@@ -1,52 +1,68 @@
-(function(){
-  const $ = (q)=>document.querySelector(q);
-  const $$ = (q)=>Array.from(document.querySelectorAll(q));
+// ===== Utilitários =====
+const $ = (q)=>document.querySelector(q);
+const $$ = (q)=>Array.from(document.querySelectorAll(q));
+function clampInt(n,min,max){ n=Math.trunc(+n||0); return Math.min(max,Math.max(min,n)); }
 
-  // Tabs
+// ===== Inicialização de Tabs =====
+function initTabs() {
   $$(".tab").forEach(btn=>btn.addEventListener("click",()=>{
     $$(".tab").forEach(b=>b.classList.remove("active")); btn.classList.add("active");
     $$(".view").forEach(v=>v.classList.remove("active")); $("#"+btn.dataset.view).classList.add("active");
   }));
+}
 
-  // Arcana selects
-  const ARCANAS = ["", "0 - Louco","I - Mago","II - Sacerdotisa","III - Imperatriz","IV - Imperador","V - Hierofante","VI - Enamorados","VII - Carruagem","VIII - Força","IX - Eremita","X - Roda da Fortuna","XI - Justiça","XII - Enforcado","XIII - Morte","XIV - Temperança","XV - Diabo","XVI - Torre","XVII - Estrela","XVIII - Lua","XIX - Sol","XX - Julgamento","XXI - Mundo"];
+// ===== Inicialização de Arcana =====
+const ARCANAS = ["", "0 - Louco","I - Mago","II - Sacerdotisa","III - Imperatriz","IV - Imperador","V - Hierofante","VI - Enamorados","VII - Carruagem","VIII - Força","IX - Eremita","X - Roda da Fortuna","XI - Justiça","XII - Enforcado","XIII - Morte","XIV - Temperança","XV - Diabo","XVI - Torre","XVII - Estrela","XVIII - Lua","XIX - Sol","XX - Julgamento","XXI - Mundo"];
+function initArcanaSelects() {
   const arcSel1 = document.getElementById("CharArcana");
   const arcSel2 = document.getElementById("PerArcana");
   [arcSel1, arcSel2].forEach(sel=> ARCANAS.forEach(a=>{ const o=document.createElement("option"); o.value=a; o.textContent=a; sel.appendChild(o);}));
+}
 
-  // IDs principais
-  const ids = {
-    CharName: $("#CharName"), CharPlayer: $("#CharPlayer"), CharAlias: $("#CharAlias"),
-    CharClass: $("#CharClass"), CharArcana: $("#CharArcana"), CharLvl: $("#CharLvl"),
-    CharSTR: $("#CharSTR"), CharMAG: $("#CharMAG"), CharTEC: $("#CharTEC"),
-    CharAGI: $("#CharAGI"), CharVIT: $("#CharVIT"), CharLCK: $("#CharLCK"),
-    KNOPts: $("#KNOPts"), DISPts: $("#DISPts"), EMPpts: $("#EMPpts"), CHAPts: $("#CHAPts"), EXPPts: $("#EXPPts"), COUPts: $("#COUPts"),
-    MaxHP: $("#MaxHP"), EnergyMax: $("#EnergyMax"), DmgRed: $("#DmgRed"), Init: $("#Init"),
-    PerName: $("#PerName"), PerArcana: $("#PerArcana"), PerLvl: $("#PerLvl"), PerNotes: $("#PerNotes"),
-    NotesDiary: $("#NotesDiary"), NotesGoals: $("#NotesGoals")
-  };
+// ===== IDs principais =====
+const ids = {
+  CharName: $("#CharName"), CharPlayer: $("#CharPlayer"), CharAlias: $("#CharAlias"),
+  CharClass: $("#CharClass"), CharArcana: $("#CharArcana"), CharLvl: $("#CharLvl"),
+  CharSTR: $("#CharSTR"), CharMAG: $("#CharMAG"), CharTEC: $("#CharTEC"),
+  CharAGI: $("#CharAGI"), CharVIT: $("#CharVIT"), CharLCK: $("#CharLCK"),
+  KNOPts: $("#KNOPts"), DISPts: $("#DISPts"), EMPpts: $("#EMPpts"), CHAPts: $("#CHAPts"), EXPPts: $("#EXPPts"), COUPts: $("#COUPts"),
+  MaxHP: $("#MaxHP"), EnergyMax: $("#EnergyMax"), DmgRed: $("#DmgRed"), Init: $("#Init"),
+  PerName: $("#PerName"), PerArcana: $("#PerArcana"), PerLvl: $("#PerLvl"), PerNotes: $("#PerNotes"),
+  NotesDiary: $("#NotesDiary"), NotesGoals: $("#NotesGoals")
+};
 
-  // Afinidades Persona
-  const ELEMENTS = ["Físico","Fogo","Gelo","Vento","Raio","Nuclear","PSY","Luz","Trevas"];
-  const EL_IDS = {"Físico":"Fisico","Fogo":"Fogo","Gelo":"Gelo","Vento":"Vento","Raio":"Raio","Nuclear":"Nuclear","PSY":"PSY","Luz":"Luz","Trevas":"Trevas"};
-  const RELS = ["Normal","Fraco","Resiste","Anula","Reflete","Absorve"];
+// ===== Afinidades Persona =====
+const ELEMENTS = ["Físico","Fogo","Gelo","Vento","Raio","Nuclear","PSY","Luz","Trevas"];
+const EL_IDS = {"Físico":"Fisico","Fogo":"Fogo","Gelo":"Gelo","Vento":"Vento","Raio":"Raio","Nuclear":"Nuclear","PSY":"PSY","Luz":"Luz","Trevas":"Trevas"};
+const RELS = ["Normal","Fraco","Resiste","Anula","Reflete","Absorve"];
+function buildAffinityTable(){
   const afBody = document.getElementById('af-body');
-  function buildAffinityTable(){
-    afBody.innerHTML = '';
-    for(let i=0;i<ELEMENTS.length;i+=2){
-      const left = ELEMENTS[i]; const right = ELEMENTS[i+1];
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${left}</td>
-        <td><select id="AF_${EL_IDS[left]}"></select></td>
-        ${ right ? `<td>${right}</td><td><select id="AF_${EL_IDS[right]}"></select></td>` : `<td></td><td></td>` }
-      `;
-      afBody.appendChild(tr);
-    }
-    const sels = Array.from(document.querySelectorAll("[id^='AF_']"));
-    RELS.forEach(r=> sels.forEach(sel=>{ const o=document.createElement('option'); o.value=r; o.textContent=r; sel.appendChild(o); }));
+  afBody.innerHTML = '';
+  for(let i=0;i<ELEMENTS.length;i+=2){
+    const left = ELEMENTS[i]; const right = ELEMENTS[i+1];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${left}</td>
+      <td><select id="AF_${EL_IDS[left]}"></select></td>
+      ${ right ? `<td>${right}</td><td><select id="AF_${EL_IDS[right]}"></select></td>` : `<td></td><td></td>` }
+    `;
+    afBody.appendChild(tr);
   }
+  const sels = Array.from(document.querySelectorAll("[id^='AF_']"));
+  RELS.forEach(r=> sels.forEach(sel=>{ const o=document.createElement('option'); o.value=r; o.textContent=r; sel.appendChild(o); }));
+}
+
+// ===== Inicialização principal =====
+function initApp() {
+  initTabs();
+  initArcanaSelects();
   buildAffinityTable();
+  // ...existing code...
+}
+
+(function(){
+  initApp();
+  // ...existing code...
 
   function clampInt(n,min,max){ n=Math.trunc(+n||0); return Math.min(max,Math.max(min,n)); }
 
