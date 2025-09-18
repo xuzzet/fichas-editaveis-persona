@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ficha Automatizada — Persona</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Bibliotecas -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- Estilos -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="captureRoot" class="wrap">
+    <header class="hud">
+      <div class="slash" aria-hidden="true"></div>
+      <div class="brand">
+        <h1>Ficha • Persona</h1>
+        <div class="sub">“Tu és eu… Eu sou tu. Do oceano da tua alma, emergirei.”</div>
+      </div>
+    </header>
+
+    <!-- TABS -->
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-view="geral">Geral</button>
+      <button class="tab" data-view="persona">Persona</button>
+      <button class="tab" data-view="equip">Equipamentos</button>
+      <button class="tab" data-view="magias">Magias</button>
+      <button class="tab" data-view="vinculos">Vínculos</button>
+      <button class="tab" data-view="notes">Anotações</button>
+    </nav>
+
+    <!-- VIEW: GERAL -->
+    <div class="view active" id="geral">
+      <main class="grid two">
+        <!-- IDENTIFICAÇÃO -->
+        <section class="card">
+          <div class="section-title"><div class="bar"></div><h2>Identificação</h2></div>
+          <div class="row row3">
+            <div><label>Nome</label><input id="CharName" placeholder="Seu personagem"/></div>
+            <div><label>Jogador</label><input id="CharPlayer" placeholder="Seu nome"/></div>
+            <div><label>Apelido</label><input id="CharAlias" placeholder="(opcional)"/></div>
+          </div>
+          <div class="row row3">
+            <div><label>Classe</label><input id="CharClass" placeholder="Ex.: Calouro"/></div>
+            <div><label>Arcana</label>
+              <select id="CharArcana"></select>
+            </div>
+            <div><label>Nível (CNv)</label><input id="CharLvl" type="number" min="1" max="99" value="1"/></div>
+          </div>
+        </section>
+
+        <!-- ATRIBUTOS (COMBATE) -->
+        <section class="card">
+          <div class="section-title"><div class="bar"></div><h2>Atributos</h2></div>
+          <div class="row">
+            <div class="stat"><b>STR</b><input id="CharSTR" type="range" min="1" max="5" value="1"><span class="badge" id="bSTR">1</span></div>
+            <div class="stat"><b>MAG</b><input id="CharMAG" type="range" min="1" max="5" value="1"><span class="badge" id="bMAG">1</span></div>
+            <div class="stat"><b>TEC</b><input id="CharTEC" type="range" min="1" max="5" value="1"><span class="badge" id="bTEC">1</span></div>
+            <div class="stat"><b>AGI</b><input id="CharAGI" type="range" min="1" max="5" value="1"><span class="badge" id="bAGI">1</span></div>
+            <div class="stat"><b>VIT</b><input id="CharVIT" type="range" min="1" max="5" value="1"><span class="badge" id="bVIT">1</span></div>
+            <div class="stat"><b>LCK</b><input id="CharLCK" type="range" min="1" max="5" value="1"><span class="badge" id="bLCK">1</span></div>
+          </div>
+          <p class="hint">Distribua 18 pontos entre os 6 atributos (mín. 1, máx. 5).</p>
+        </section>
+
+        <!-- SOCIAIS / DERIVADOS -->
+        <section class="card">
+          <div class="section-title"><div class="bar"></div><h2>Habilidades Sociais</h2></div>
+          <div class="row row3">
+            <div><label>Conhecimento</label><input id="KNOPts" type="number" min="0" max="10" value="0"/></div>
+            <div><label>Disciplina</label><input id="DISPts" type="number" min="0" max="10" value="0"/></div>
+            <div><label>Empatia</label><input id="EMPpts" type="number" min="0" max="10" value="0"/></div>
+          </div>
+          <div class="row row3">
+            <div><label>Charme</label><input id="CHAPts" type="number" min="0" max="10" value="0"/></div>
+            <div><label>Expressão</label><input id="EXPPts" type="number" min="0" max="10" value="0"/></div>
+            <div><label>Coragem</label><input id="COUPts" type="number" min="0" max="10" value="0"/></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-title"><div class="bar"></div><h2>Derivados</h2></div>
+          <div class="der">
+            <div class="panel"><strong>Pontos de Vida</strong><div class="value pv" id="MaxHP">—</div></div>
+            <div class="panel"><strong>Energia</strong><div class="value en" id="EnergyMax">—</div></div>
+          </div>
+          <div class="row row2">
+            <div><label>Redução de Dano</label><input id="DmgRed" type="number" min="0" max="99" value="0"/></div>
+            <div><label>Iniciativa (AGI)</label><input id="Init" type="number" value="1" readonly/></div>
+          </div>
+          <p class="hint">PV = 25 + ((5 + VIT) × CNv) • Energia = VIT + ⌊CNv/2⌋</p>
+        </section>
+
+        <section class="card">
+          <div class="section-title"><div class="bar"></div><h2>Ações</h2></div>
+          <div class="actions">
+            <button id="save">Salvar</button>
+            <button id="load">Carregar</button>
+            <button id="export">Exportar JSON</button>
+            <button id="import">Importar JSON</button>
+            <button id="fill">Preencher PDF</button>
+            <button id="png">Exportar PNG</button>
+            <button id="print">Imprimir</button>
+            <button id="tests">Testes</button>
+            <input id="pdfFile" type="file" accept="application/pdf" style="display:none" />
+          </div>
+          <p class="hint">Em testes por favor relevar se ocorrer algum erro.</p>
+        </section>
+
+        <section class="card" id="tests-card" style="display:none">
+          <div class="section-title"><div class="bar"></div><h2>Resultados dos Testes</h2></div>
+          <div id="tests-out" class="hint">Clique em <b>Testes</b> para rodar as verificações.</div>
+        </section>
+      </main>
+    </div>
+
+    <!-- VIEW: PERSONA -->
+    <div class="view" id="persona">
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Persona — Identidade</h2></div>
+        <div class="row row3">
+          <div><label>Nome da Persona</label><input id="PerName" placeholder="Ex.: Orfeu"/></div>
+          <div><label>Arcana</label><select id="PerArcana"></select></div>
+          <div><label>Nível</label><input id="PerLvl" type="number" min="1" max="99" value="1"/></div>
+        </div>
+        <label>Notas</label>
+        <textarea id="PerNotes" placeholder="Traços, origem mítica, gatilhos de despertar..."></textarea>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Afinidades</h2></div>
+        <div class="hint">Selecione uma relação por elemento (Fraco, Normal, Resiste, Anula, Reflete, Absorve).</div>
+        <table>
+          <thead><tr><th>Elemento</th><th>Relação</th><th>Elemento</th><th>Relação</th></tr></thead>
+          <tbody id="af-body"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- VIEW: EQUIPAMENTOS -->
+    <div class="view" id="equip">
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Equipamentos & Itens</h2></div>
+        <div class="actions"><button class="mini" id="add-eq">+ Adicionar</button></div>
+        <div class="hint">Use para armas, armaduras, acessórios e itens diversos.</div>
+        <table id="tbl-eq">
+          <thead><tr><th>Tipo</th><th>Nome</th><th>Efeito/Notas</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- VIEW: MAGIAS -->
+    <div class="view" id="magias">
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Magias & Técnicas</h2></div>
+        <div class="actions"><button class="mini" id="add-spell">+ Adicionar</button></div>
+        <div class="hint">Nome, tipo (Físico/Fogo/Gelo/Vento/Raio/Nuclear/PSY/Luz/Trevas/Suporte/Controle), custo e efeito.</div>
+        <table id="tbl-spell">
+          <thead><tr><th>Nome</th><th>Tipo</th><th>Custo</th><th>Efeito</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- VIEW: VÍNCULOS -->
+    <div class="view" id="vinculos">
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Vínculos (Arcana)</h2></div>
+        <div class="actions"><button class="mini" id="add-link">+ Adicionar</button></div>
+        <div class="hint">Registre NPC, Arcana e Rank (1–10), com observações.</div>
+        <table id="tbl-link">
+          <thead><tr><th>Nome</th><th>Arcana</th><th>Rank</th><th>Observações</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- VIEW: ANOTAÇÕES -->
+    <div class="view" id="notes">
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Anotações — Diário & Objetivos</h2></div>
+        <div class="row row2">
+          <div>
+            <label>Diário</label>
+            <textarea id="NotesDiary" placeholder="Resumo das sessões, momentos marcantes, pensamentos do personagem..."></textarea>
+          </div>
+          <div>
+            <label>Objetivos</label>
+            <textarea id="NotesGoals" placeholder="Curto prazo (semana), médio (bimestre), longo (ano)."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Pistas / Âncoras</h2></div>
+        <div class="actions"><button class="mini" id="add-clue">+ Adicionar Pista</button></div>
+        <table id="tbl-clue">
+          <thead><tr><th>Título</th><th>Descrição</th><th>Evidência</th><th>Status</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Contatos & Locais</h2></div>
+        <div class="actions"><button class="mini" id="add-ctt">+ Adicionar Contato/Local</button></div>
+        <table id="tbl-ctt">
+          <thead><tr><th>Nome</th><th>Tipo</th><th>Observações</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- Scripts do app -->
+  <script src="app.js"></script>
+</body>
+</html>
