@@ -11,6 +11,9 @@
   --danger: #ff4b6e;
   --ok: #60f5a1;
   --radius: 18px;
+  --mobile-padding: 10px;
+  --mobile-radius: 12px;
+  --mobile-font: 15px;
 }
 * {
   box-sizing: border-box;
@@ -39,11 +42,80 @@ body {
   background-size: cover, cover, cover;
   font: 500 16px/1.45 Inter, "Noto Sans JP", system-ui, -apple-system, Segoe UI,
     Roboto, Helvetica, Arial;
+  -webkit-tap-highlight-color: rgba(0,202,255,0.2);
+  overscroll-behavior-y: contain;
 }
 .wrap {
   width: min(1180px, 100%);
   margin: 0 auto;
   padding: 22px;
+}
+
+@media (max-width: 600px) {
+  .wrap {
+    padding: var(--mobile-padding);
+  }
+  body {
+    font-size: var(--mobile-font);
+  }
+  .card, .panel, .brand {
+    border-radius: var(--mobile-radius);
+    padding: 10px;
+  }
+  .tabs {
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .tab {
+    padding: 10px 12px 9px;
+    font-size: 13px;
+    min-width: 90px;
+  }
+  .section-title h2 {
+    font-size: 13px;
+  }
+  .bar {
+    width: 60px;
+    height: 10px;
+  }
+  input, select, textarea {
+    font-size: 14px;
+    padding: 10px 10px;
+    border-radius: 10px;
+  }
+  button {
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .value {
+    font-size: 32px;
+  }
+  .grid.two, .row2, .row3, .der {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+  .grid {
+    gap: 10px;
+  }
+  .stat {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  table {
+    font-size: 13px;
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+  }
+  th, td {
+    padding: 8px 8px;
+  }
+  .row-actions {
+    gap: 4px;
+  }
+}
 }
 .hud {
   display: flex;
@@ -128,9 +200,22 @@ body {
   display: grid;
   gap: 18px;
 }
+
+@media (max-width: 600px) {
+  .grid {
+    gap: 10px;
+  }
+}
+}
 @media (min-width: 980px) {
   .grid.two {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid.two {
+    grid-template-columns: 1fr;
   }
 }
 .card {
@@ -141,6 +226,7 @@ body {
   position: relative;
   box-shadow: 0 16px 60px rgba(0, 0, 0, 0.55),
     inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  min-width: 0;
 }
 .card::before {
   content: "";
@@ -200,6 +286,7 @@ textarea {
   border-radius: 14px;
   outline: none;
   font-size: 15px;
+  min-width: 0;
 }
 input:focus,
 select:focus,
@@ -215,10 +302,17 @@ textarea {
 .row {
   display: grid;
   gap: 12px;
+  min-width: 0;
 }
 @media (min-width: 640px) {
   .row2 {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .row2 {
+    grid-template-columns: 1fr;
   }
 }
 @media (min-width: 960px) {
@@ -226,11 +320,18 @@ textarea {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+@media (max-width: 600px) {
+  .row3 {
+    grid-template-columns: 1fr;
+  }
+}
 .stat {
   display: grid;
   grid-template-columns: 110px 1fr 68px;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 .stat b {
   font-family: "Barlow Condensed";
@@ -261,11 +362,13 @@ textarea {
   background: #0a1330;
   font-weight: 900;
   font-family: "Barlow Condensed";
+  min-width: 0;
 }
 .der {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(2, 1fr);
+  min-width: 0;
 }
 .panel {
   background: #0a1330;
@@ -276,6 +379,7 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  min-width: 0;
 }
 .panel strong {
   font-size: 13px;
@@ -302,6 +406,7 @@ table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 8px;
+  min-width: 0;
 }
 th,
 td {
@@ -309,6 +414,7 @@ td {
   padding: 10px 12px;
   background: #0a1432;
   border: 1px solid #1a2f5a;
+  min-width: 0;
 }
 th {
   background: #0b1738;
@@ -348,6 +454,7 @@ th:last-child {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 12px;
+  min-width: 0;
 }
 button {
   cursor: pointer;
@@ -360,6 +467,7 @@ button {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   font-family: "Barlow Condensed";
+  min-width: 0;
 }
 button:hover {
   border-color: var(--accent);
@@ -372,9 +480,11 @@ button:hover {
 }
 .view {
   display: none;
+  min-width: 0;
 }
 .view.active {
   display: block;
+  min-width: 0;
 }
 @media print {
   @page {
