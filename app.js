@@ -359,7 +359,19 @@ function initApp() {
   cttBody.innerHTML = ""; (data.notes?.contacts||[]).forEach(addCtt);
   }
 
-  document.getElementById("save").addEventListener("click", ()=>{ localStorage.setItem("ficha-yby-p3r-skin", JSON.stringify(snapshot())); alert("Ficha salva."); });
+  document.getElementById("save").addEventListener("click", ()=>{
+    // Validação de campos obrigatórios
+    const obrigatorios = [ids.CharClass, ids.CharPlayer, ids.PerName];
+    let faltando = obrigatorios.filter(f => !f.value.trim());
+    if (faltando.length > 0) {
+      faltando.forEach(f => { f.classList.add('input-error'); f.focus(); });
+      alert("Preencha todos os campos obrigatórios marcados com '?'.");
+      setTimeout(() => faltando.forEach(f => f.classList.remove('input-error')), 2000);
+      return;
+    }
+    localStorage.setItem("ficha-yby-p3r-skin", JSON.stringify(snapshot()));
+    alert("Ficha salva.");
+  });
   document.getElementById("load").addEventListener("click", ()=>{ const raw=localStorage.getItem("ficha-yby-p3r-skin"); if(!raw) return alert("Nada salvo."); try{ applySnapshot(JSON.parse(raw)); alert("Ficha carregada."); }catch(e){ alert("Falha ao carregar."); } });
   document.getElementById("export").addEventListener("click", ()=>{ const blob = new Blob([JSON.stringify(snapshot(),null,2)], {type:"application/json"}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=((ids.CharName.value||'ficha')+".json"); a.click(); URL.revokeObjectURL(a.href); });
   document.getElementById("import").addEventListener("click", ()=>{ const i=document.createElement('input'); i.type='file'; i.accept='application/json'; i.onchange=()=>{ const f=i.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ applySnapshot(JSON.parse(r.result)); alert('Importado.'); }catch(e){ alert('Falha ao importar.'); } }; r.readAsText(f); }; i.click(); });

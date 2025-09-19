@@ -1,3 +1,9 @@
+/* Feedback visual para erro de campo obrigatório */
+.input-error {
+  border: 2px solid var(--danger) !important;
+  background: #ff4b6e22 !important;
+  box-shadow: 0 0 0 2px var(--danger);
+}
 body.theme-padrao {
   --ink: #eaf6ff;
   --ink-dim: #b9c9e8;
@@ -104,9 +110,36 @@ body.theme-degrade {
   --mobile-padding: 10px;
   --mobile-radius: 12px;
   --mobile-font: 15px;
+  --tooltip-bg: #222b;
+  --tooltip-color: #fff;
+  --tooltip-border: #00caff;
 }
 * {
   box-sizing: border-box;
+}
+/* Tooltip */
+.tooltip {
+  border-bottom: 1px dotted var(--accent);
+  cursor: help;
+  font-size: 13px;
+  margin-left: 4px;
+  color: var(--accent);
+  position: relative;
+}
+.tooltip[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 0;
+  top: 120%;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-color);
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--tooltip-border);
+  white-space: pre-line;
+  font-size: 13px;
+  z-index: 100;
+  box-shadow: 0 2px 8px #0005;
 }
 html,
 body {
@@ -127,6 +160,16 @@ body {
       transparent 60%
     ),
     linear-gradient(180deg, #070d1b 0%, #051022 60%, #04101e 100%);
+  /* Feedback visual para botões */
+  .btn-feedback {
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .btn-feedback:hover,
+  .btn-feedback:focus {
+    background: var(--accent-2);
+    box-shadow: 0 0 0 2px var(--accent);
+    color: #222;
+  }
   background-repeat: no-repeat;
   background-attachment: fixed, fixed, fixed; /* parallax-like stability */
   background-size: cover, cover, cover;

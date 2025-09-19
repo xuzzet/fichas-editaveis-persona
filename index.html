@@ -51,12 +51,12 @@
         <section class="card">
           <div class="section-title"><div class="bar"></div><h2>Informações do Personagem</h2></div>
           <div class="row row2">
-            <div><label>Classe</label><input id="CharClass" placeholder="Classe"/></div>
+            <div><label>Classe <span class="tooltip" title="Campo obrigatório. Exemplo: Lutador, Mago, Atirador.">?</span></label><input id="CharClass" placeholder="Classe" required/></div>
             <div><label>Nível</label><input id="CharLvl" type="number" min="1" max="99" value="1"/></div>
           </div>
           <div class="row row2">
             <div><label>Arcana</label><select id="CharArcana"></select></div>
-            <div><label>Jogador</label><input id="CharPlayer" placeholder="Nome do jogador"/></div>
+            <div><label>Jogador <span class="tooltip" title="Campo obrigatório. Informe o nome do jogador.">?</span></label><input id="CharPlayer" placeholder="Nome do jogador" required/></div>
           </div>
         </section>
 
@@ -109,7 +109,7 @@
         <section class="card">
           <div class="section-title"><div class="bar"></div><h2>Persona</h2></div>
           <div class="row row2">
-            <div><label>Nome</label><input id="PerName" placeholder="Nome da Persona"/></div>
+            <div><label>Nome <span class="tooltip" title="Campo obrigatório. Exemplo: Orfeu, Alice, Fenrir.">?</span></label><input id="PerName" placeholder="Nome da Persona" required/></div>
             <div><label>Convicção</label><input id="Conviction" placeholder="Convicção"/></div>
           </div>
           <div class="row row2">
@@ -155,11 +155,11 @@
         <section class="card">
           <div class="section-title"><div class="bar"></div><h2>Ações</h2></div>
           <div class="actions">
-            <button id="save">Salvar</button>
-            <button id="load">Carregar</button>
-            <button id="export">Exportar JSON</button>
-            <button id="import">Importar JSON</button>
-            <button id="reset">Resetar Ficha</button>
+            <button id="save" class="btn-feedback">Salvar</button>
+            <button id="load" class="btn-feedback">Carregar</button>
+            <button id="export" class="btn-feedback">Exportar JSON</button>
+            <button id="import" class="btn-feedback">Importar JSON</button>
+            <button id="reset" class="btn-feedback">Resetar Ficha</button>
           </div>
           <p class="hint">Em testes por favor relevar se ocorrer algum erro.</p>
         </section>
