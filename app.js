@@ -1,3 +1,75 @@
+// ===== Retrato do Personagem (Portrait) =====
+document.addEventListener('DOMContentLoaded', function() {
+  const portraitBtn = document.getElementById('portraitBtn');
+  const portraitInput = document.getElementById('portraitInput');
+  const portraitPreview = document.getElementById('portraitPreview');
+  const portraitZoomBtn = document.getElementById('portraitZoomBtn');
+  const portraitModal = document.getElementById('portraitModal');
+  const portraitModalImg = document.getElementById('portraitModalImg');
+  const portraitModalClose = document.getElementById('portraitModalClose');
+  let portraitImgSrc = '';
+
+  if (portraitBtn && portraitInput && portraitPreview) {
+    portraitBtn.addEventListener('click', () => portraitInput.click());
+    portraitInput.addEventListener('change', () => {
+      const file = portraitInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          portraitImgSrc = e.target.result;
+          portraitPreview.innerHTML = `<img src='${portraitImgSrc}' alt='Retrato' style='max-width:180px;max-height:220px;border-radius:12px;border:2px solid var(--accent);'/>`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        portraitImgSrc = '';
+        portraitPreview.innerHTML = '';
+      }
+    });
+  }
+
+  if (portraitZoomBtn && portraitModal && portraitModalImg && portraitModalClose) {
+    portraitZoomBtn.addEventListener('click', function() {
+      if (portraitImgSrc) {
+        portraitModalImg.src = portraitImgSrc;
+        portraitModal.style.display = 'flex';
+      }
+    });
+    portraitModalClose.addEventListener('click', function() {
+      portraitModal.style.display = 'none';
+      portraitModalImg.src = '';
+    });
+    portraitModal.addEventListener('click', function(e) {
+      if (e.target === portraitModal) {
+        portraitModal.style.display = 'none';
+        portraitModalImg.src = '';
+      }
+    });
+  }
+});
+const ELEMENTS = [
+  "Físico",
+  "Fogo",
+  "Gelo",
+  "Vento",
+  "Raio",
+  "Nuclear",
+  "PSY",
+  "Luz",
+  "Trevas",
+  "Onipotente"
+];
+const EL_IDS = {
+  "Físico": "Fisico",
+  "Fogo": "Fogo",
+  "Gelo": "Gelo",
+  "Vento": "Vento",
+  "Raio": "Raio",
+  "Nuclear": "Nuclear",
+  "PSY": "PSY",
+  "Luz": "Luz",
+  "Trevas": "Trevas",
+  "Onipotente": "Onipotente"
+};
 // ...existing code...
   // ===== Tema Dinâmico =====
   const themeSelect = document.getElementById('themeSelect');
@@ -99,8 +171,7 @@ const ids = {
 };
 
 // ===== Afinidades Persona =====
-const ELEMENTS = ["Físico","Fogo","Gelo","Vento","Raio","Nuclear","PSY","Luz","Trevas"];
-const EL_IDS = {"Físico":"Fisico","Fogo":"Fogo","Gelo":"Gelo","Vento":"Vento","Raio":"Raio","Nuclear":"Nuclear","PSY":"PSY","Luz":"Luz","Trevas":"Trevas"};
+// ELEMENTS e EL_IDS já declarados acima
 const RELS = ["Normal","Fraco","Resiste","Anula","Reflete","Absorve"];
 function buildAffinityTable(){
   const afBody = document.getElementById('af-body');
