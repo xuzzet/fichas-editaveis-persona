@@ -167,14 +167,31 @@ function initApp() {
   $("#add-spell").addEventListener("click", ()=> addSpell());
     function addSpell(data={nome:"", tipo:"Físico", custo:"", efeito:""}){
   const tr = document.createElement("tr");
-  tr.innerHTML = `<td><input class="sp-n" placeholder="SPELL"/></td>
-          <td><input class="sp-c" placeholder="TARGET"/></td>
+  tr.innerHTML = `<td><input class="sp-n" placeholder="Magia/Técnica"/></td>
+          <td><input class="sp-c" placeholder="Alvo"/></td>
           <td><select class="sp-t"></select></td>
-          <td><input class="sp-e" placeholder="EFFECT"/></td>
-          <td><input class="sp-tier" placeholder="TIER"/></td>
-          <td><input class="sp-uses" placeholder="USES"/></td>
-          <td><input class="sp-repr" placeholder="REPR"/></td>
+          <td><input class="sp-e" placeholder="Efeito"/></td>
+          <td><input class="sp-tier" placeholder="Nível"/></td>
+          <td><input class="sp-uses" placeholder="Usos"/></td>
+          <td><input type="file" accept="image/*" class="sp-repr" style="display:none"/><button class="mini icone-btn">Selecionar Ícone</button><span class="icone-preview"></span></td>
           <td class="row-actions"><button class="mini del">Remover</button></td>`;
+  // Lógica para upload e preview do ícone
+  const fileInput = tr.querySelector('.sp-repr');
+  const btn = tr.querySelector('.icone-btn');
+  const preview = tr.querySelector('.icone-preview');
+  btn.addEventListener('click', ()=> fileInput.click());
+  fileInput.addEventListener('change', ()=> {
+    const file = fileInput.files[0];
+    if(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.innerHTML = `<img src='${e.target.result}' alt='ícone' style='max-width:32px;max-height:32px;border-radius:6px;'/>`;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      preview.innerHTML = '';
+    }
+  });
       spellBody.appendChild(tr);
       const tsel = tr.querySelector('.sp-t'); 
       ["Físico","Fogo","Gelo","Vento","Raio","Nuclear","PSY","Luz","Trevas","Suporte","Controle"].forEach(t=>{ 
