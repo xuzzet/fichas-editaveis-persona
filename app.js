@@ -1,3 +1,67 @@
+// ...existing code...
+  // ===== Tema Dinâmico =====
+  const themeSelect = document.getElementById('themeSelect');
+  const themeMap = {
+    padrao: 'theme-padrao',
+    roxo: 'theme-roxo',
+    claro: 'theme-claro',
+    amarelo: 'theme-amarelo',
+    vermelho: 'theme-vermelho',
+    degrade: 'theme-degrade'
+  };
+  function applyTheme(theme) {
+    Object.values(themeMap).forEach(cls => document.body.classList.remove(cls));
+    document.body.classList.add(themeMap[theme] || themeMap.padrao);
+  }
+  function saveTheme(theme) {
+    localStorage.setItem('ficha-theme', theme);
+  }
+  function loadTheme() {
+    return localStorage.getItem('ficha-theme') || 'padrao';
+  }
+  if (themeSelect) {
+    themeSelect.value = loadTheme();
+    applyTheme(themeSelect.value);
+    themeSelect.addEventListener('change', function() {
+      applyTheme(this.value);
+      saveTheme(this.value);
+    });
+  }
+
+  // Função para resetar todos os campos da ficha
+  function resetFicha() {
+    // Seleciona todos os inputs, selects e textareas dentro do .wrap
+    const root = document.querySelector('.wrap');
+    const fields = root.querySelectorAll('input, select, textarea');
+    fields.forEach(field => {
+      if (field.type === 'number' || field.type === 'range') {
+        field.value = field.min || '';
+      } else if (field.type === 'checkbox' || field.type === 'radio') {
+        field.checked = false;
+      } else if (field.tagName === 'SELECT') {
+        field.selectedIndex = 0;
+      } else {
+        field.value = '';
+      }
+    });
+    // Limpa tabelas dinâmicas se existirem
+    ['tbl-eq','tbl-spell','tbl-link','tbl-clue','tbl-ctt'].forEach(id => {
+      const tbody = document.querySelector(`#${id} tbody`);
+      if (tbody) tbody.innerHTML = '';
+    });
+    // Limpa afinidades
+    const afBody = document.getElementById('af-body');
+    if (afBody) afBody.innerHTML = '';
+    // Limpa notas de teste
+    const testsOut = document.getElementById('tests-out');
+    if (testsOut) testsOut.textContent = 'Clique em Testes para rodar as verificações.';
+    // Remove dados do localStorage
+    localStorage.removeItem('ficha-persona');
+  }
+
+  // Adiciona evento ao botão de reset
+  document.getElementById('reset').addEventListener('click', resetFicha);
+  // ...existing code...
 // ===== Utilitários =====
 const $ = (q)=>document.querySelector(q);
 const $$ = (q)=>Array.from(document.querySelectorAll(q));
@@ -21,13 +85,16 @@ function initArcanaSelects() {
 
 // ===== IDs principais =====
 const ids = {
-  CharName: $("#CharName"), CharPlayer: $("#CharPlayer"), CharAlias: $("#CharAlias"),
-  CharClass: $("#CharClass"), CharArcana: $("#CharArcana"), CharLvl: $("#CharLvl"),
-  CharSTR: $("#CharSTR"), CharMAG: $("#CharMAG"), CharTEC: $("#CharTEC"),
-  CharAGI: $("#CharAGI"), CharVIT: $("#CharVIT"), CharLCK: $("#CharLCK"),
-  KNOPts: $("#KNOPts"), DISPts: $("#DISPts"), EMPpts: $("#EMPpts"), CHAPts: $("#CHAPts"), EXPPts: $("#EXPPts"), COUPts: $("#COUPts"),
-  MaxHP: $("#MaxHP"), EnergyMax: $("#EnergyMax"), DmgRed: $("#DmgRed"), Init: $("#Init"),
-  PerName: $("#PerName"), PerArcana: $("#PerArcana"), PerLvl: $("#PerLvl"), PerNotes: $("#PerNotes"),
+  CharClass: $("#CharClass"), CharLvl: $("#CharLvl"), CharArcana: $("#CharArcana"), CharPlayer: $("#CharPlayer"),
+  CharSTR: $("#CharSTR"), CharMAG: $("#CharMAG"), CharTEC: $("#CharTEC"), CharAGI: $("#CharAGI"), CharVIT: $("#CharVIT"), CharLCK: $("#CharLCK"),
+  MaxHP: $("#MaxHP"), EnergyMax: $("#EnergyMax"), DmgRed: $("#DmgRed"),
+  KNOPts: $("#KNOPts"), DISPts: $("#DISPts"), EMPpts: $("#EMPpts"), EXPPts: $("#EXPPts"), COUPts: $("#COUPts"), CHAPts: $("#CHAPts"),
+  Aspectos: $("#Aspectos"), AspectPoints: $("#AspectPoints"), Buffs: $("#Buffs"),
+  PerName: $("#PerName"), Conviction: $("#Conviction"), NaturalSkill: $("#NaturalSkill"), PerLvl: $("#PerLvl"), PerSP: $("#PerSP"), PerTypes: $("#PerTypes"),
+  Weapon: $("#Weapon"), WeaponDmg: $("#WeaponDmg"), WeaponReach: $("#WeaponReach"), WeaponEffect: $("#WeaponEffect"),
+  Armor: $("#Armor"), ArmorDmgRed: $("#ArmorDmgRed"), ArmorEffect: $("#ArmorEffect"),
+  Accessory: $("#Accessory"), AccessoryEffect: $("#AccessoryEffect"),
+  Resistances: $("#Resistances"),
   NotesDiary: $("#NotesDiary"), NotesGoals: $("#NotesGoals")
 };
 
@@ -67,15 +134,13 @@ function initApp() {
   function clampInt(n,min,max){ n=Math.trunc(+n||0); return Math.min(max,Math.max(min,n)); }
 
   function recalc(){
-    const lvl = clampInt(ids.CharLvl.value,1,99);
-    const vit = clampInt(ids.CharVIT.value,1,5);
-    const agi = clampInt(ids.CharAGI.value,1,5);
-    ids.MaxHP.textContent = 25 + ((5 + vit) * lvl);
-    ids.EnergyMax.textContent = vit + Math.floor(lvl/2);
-    ids.Init.value = agi;
+    const lvl = clampInt(ids.CharLvl?.value||1,1,99);
+    const vit = clampInt(ids.CharVIT?.value||1,1,5);
+    ids.MaxHP.value = 25 + ((5 + vit) * lvl);
+    ids.EnergyMax.value = vit + Math.floor(lvl/2);
     ["STR","MAG","TEC","AGI","VIT","LCK"].forEach(k=>{
       const el = document.getElementById("b"+k);
-      if(el) el.textContent = ids["Char"+k].value;
+      if(el && ids["Char"+k]) el.textContent = ids["Char"+k].value;
     });
   }
   [ids.CharLvl, ids.CharVIT, ids.CharAGI, ids.CharSTR, ids.CharMAG, ids.CharTEC, ids.CharLCK].forEach(el=> el.addEventListener("input", recalc));
@@ -100,18 +165,26 @@ function initApp() {
   // ====== Magias ======
   const spellBody = $("#tbl-spell tbody");
   $("#add-spell").addEventListener("click", ()=> addSpell());
-  const TIPOS = ["Físico","Fogo","Gelo","Vento","Raio","Nuclear","PSY","Luz","Trevas","Suporte","Controle"];
-  function addSpell(data={nome:"", tipo:"Físico", custo:"", efeito:""}){
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td><input class="sp-n" placeholder="Nome"/></td>
-                    <td><select class="sp-t"></select></td>
-                    <td><input class="sp-c" placeholder="Ex.: 8 SP"/></td>
-                    <td><input class="sp-e" placeholder="Descrição do efeito"/></td>
-                    <td class="row-actions"><button class="mini del">Remover</button></td>`;
-    spellBody.appendChild(tr);
-    const tsel = tr.querySelector('.sp-t'); TIPOS.forEach(t=>{ const o=document.createElement('option'); o.textContent=t; tsel.appendChild(o); });
-    tr.querySelector('.sp-n').value = data.nome||""; tsel.value = data.tipo||"Físico"; tr.querySelector('.sp-c').value = data.custo||""; tr.querySelector('.sp-e').value = data.efeito||"";
-    tr.querySelector('.del').addEventListener('click', ()=> tr.remove());
+    function addSpell(data={nome:"", tipo:"Físico", custo:"", efeito:""}){
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td><input class="sp-n" placeholder="SPELL"/></td>
+          <td><input class="sp-c" placeholder="TARGET"/></td>
+          <td><select class="sp-t"></select></td>
+          <td><input class="sp-e" placeholder="EFFECT"/></td>
+          <td><input class="sp-tier" placeholder="TIER"/></td>
+          <td><input class="sp-uses" placeholder="USES"/></td>
+          <td><input class="sp-repr" placeholder="REPR"/></td>
+          <td class="row-actions"><button class="mini del">Remover</button></td>`;
+      spellBody.appendChild(tr);
+      const tsel = tr.querySelector('.sp-t'); 
+      ["Físico","Fogo","Gelo","Vento","Raio","Nuclear","PSY","Luz","Trevas","Suporte","Controle"].forEach(t=>{ 
+        const o=document.createElement('option'); o.textContent=t; tsel.appendChild(o); 
+      });
+      tr.querySelector('.sp-n').value = data.nome||""; 
+      tsel.value = data.tipo||"Físico"; 
+      tr.querySelector('.sp-c').value = data.custo||""; 
+      tr.querySelector('.sp-e').value = data.efeito||""; 
+      tr.querySelector('.del').addEventListener('click', ()=> tr.remove());
   }
   function getSpells(){ return Array.from(spellBody.querySelectorAll('tr')).map(tr=>({ nome: tr.querySelector('.sp-n').value, tipo: tr.querySelector('.sp-t').value, custo: tr.querySelector('.sp-c').value, efeito: tr.querySelector('.sp-e').value })); }
 
@@ -173,32 +246,29 @@ function initApp() {
     const affin = {}; ELEMENTS.forEach(e=>{ const id = 'AF_'+EL_IDS[e]; const sel = document.getElementById(id); affin[e] = sel? sel.value : 'Normal'; });
     return {
       id:"ficha-yby-p3r-skin",
-      geral:{
-        CharName: ids.CharName.value, CharPlayer: ids.CharPlayer.value, CharAlias: ids.CharAlias.value,
-        CharClass: ids.CharClass.value, CharArcana: ids.CharArcana.value, CharLvl: ids.CharLvl.value,
-        CharSTR: ids.CharSTR.value, CharMAG: ids.CharMAG.value, CharTEC: ids.CharTEC.value, CharAGI: ids.CharAGI.value, CharVIT: ids.CharVIT.value, CharLCK: ids.CharLCK.value,
-        KNOPts: ids.KNOPts.value, DISPts: ids.DISPts.value, EMPpts: ids.EMPpts.value, CHAPts: ids.CHAPts.value, EXPPts: ids.EXPPts.value, COUPts: ids.COUPts.value,
-        DmgRed: ids.DmgRed.value,
-        MaxHP: ids.MaxHP.textContent, EnergyMax: ids.EnergyMax.textContent, Init: ids.Init.value
+      acessoRapido:{
+        CharClass: ids.CharClass?.value||"", CharLvl: ids.CharLvl?.value||"", CharArcana: ids.CharArcana?.value||"", CharPlayer: ids.CharPlayer?.value||"",
+        CharSTR: ids.CharSTR?.value||"", CharMAG: ids.CharMAG?.value||"", CharTEC: ids.CharTEC?.value||"", CharAGI: ids.CharAGI?.value||"", CharVIT: ids.CharVIT?.value||"", CharLCK: ids.CharLCK?.value||"",
+        MaxHP: ids.MaxHP?.value||"", EnergyMax: ids.EnergyMax?.value||"", DmgRed: ids.DmgRed?.value||"",
+        KNOPts: ids.KNOPts?.value||"", DISPts: ids.DISPts?.value||"", EMPpts: ids.EMPpts?.value||"", EXPPts: ids.EXPPts?.value||"", COUPts: ids.COUPts?.value||"", CHAPts: ids.CHAPts?.value||"",
+        Aspectos: ids.Aspectos?.value||"", AspectPoints: ids.AspectPoints?.value||"", Buffs: ids.Buffs?.value||"",
+        PerName: ids.PerName?.value||"", Conviction: ids.Conviction?.value||"", NaturalSkill: ids.NaturalSkill?.value||"", PerLvl: ids.PerLvl?.value||"", PerSP: ids.PerSP?.value||"", PerTypes: ids.PerTypes?.value||"",
+        Weapon: ids.Weapon?.value||"", WeaponDmg: ids.WeaponDmg?.value||"", WeaponReach: ids.WeaponReach?.value||"", WeaponEffect: ids.WeaponEffect?.value||"",
+        Armor: ids.Armor?.value||"", ArmorDmgRed: ids.ArmorDmgRed?.value||"", ArmorEffect: ids.ArmorEffect?.value||"",
+        Accessory: ids.Accessory?.value||"", AccessoryEffect: ids.AccessoryEffect?.value||"",
+        Resistances: ids.Resistances?.value||""
       },
-      persona:{ PerName: ids.PerName.value, PerArcana: ids.PerArcana.value, PerLvl: ids.PerLvl.value, PerNotes: ids.PerNotes.value, affin },
-      equip: getEquip(), spells: getSpells(), links: getLinks(),
-      notes: { diary: ids.NotesDiary.value, goals: ids.NotesGoals.value, clues: getClues(), contacts: getCtts() }
+      notes: { diary: ids.NotesDiary?.value||"", goals: ids.NotesGoals?.value||"", clues: getClues(), contacts: getCtts() }
     };
   }
   function applySnapshot(data){
     if(!data) return;
-    const g = data.geral||{}; Object.keys(g).forEach(k=>{ if(ids[k]){ if(ids[k].tagName==="DIV") ids[k].textContent=g[k]; else ids[k].value=g[k]; } });
-    const p = data.persona||{}; ids.PerName.value=p.PerName||""; ids.PerArcana.value=p.PerArcana||""; ids.PerLvl.value=p.PerLvl||1; ids.PerNotes.value=p.PerNotes||"";
-    if(p.affin){ Object.entries(p.affin).forEach(([el,val])=>{ const sel=document.getElementById('AF_'+EL_IDS[el]); if(sel) sel.value=val; }); }
-    recalc();
-    linkBody.innerHTML = ""; (data.links||[]).forEach(addLink);
-    spellBody.innerHTML = ""; (data.spells||[]).forEach(addSpell);
-    eqBody.innerHTML = ""; (data.equip||[]).forEach(addEq);
-    ids.NotesDiary.value = data.notes?.diary || "";
-    ids.NotesGoals.value = data.notes?.goals || "";
-    clueBody.innerHTML = ""; (data.notes?.clues||[]).forEach(addClue);
-    cttBody.innerHTML = ""; (data.notes?.contacts||[]).forEach(addCtt);
+  const g = data.acessoRapido||{}; Object.keys(g).forEach(k=>{ if(ids[k]){ if(ids[k].tagName==="DIV") ids[k].textContent=g[k]; else ids[k].value=g[k]; } });
+  recalc();
+  ids.NotesDiary.value = data.notes?.diary || "";
+  ids.NotesGoals.value = data.notes?.goals || "";
+  clueBody.innerHTML = ""; (data.notes?.clues||[]).forEach(addClue);
+  cttBody.innerHTML = ""; (data.notes?.contacts||[]).forEach(addCtt);
   }
 
   document.getElementById("save").addEventListener("click", ()=>{ localStorage.setItem("ficha-yby-p3r-skin", JSON.stringify(snapshot())); alert("Ficha salva."); });

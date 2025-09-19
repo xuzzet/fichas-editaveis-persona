@@ -21,53 +21,63 @@
         <h1>Ficha • Persona</h1>
         <div class="sub">“Tu és eu… Eu sou tu. Do oceano da tua alma, emergirei.”</div>
       </div>
+      <div class="theme-switcher">
+        <label for="themeSelect" style="font-size:13px;font-weight:700;margin-right:8px;">Tema:</label>
+        <select id="themeSelect">
+          <option value="padrao">Padrão</option>
+          <option value="roxo">Roxo</option>
+          <option value="claro">Claro</option>
+          <option value="amarelo">Amarelo</option>
+          <option value="vermelho">Vermelho</option>
+          <option value="degrade">Degradê Verde/Roxo</option>
+        </select>
+      </div>
     </header>
 
     <!-- TABS -->
     <nav class="tabs" id="tabs">
-      <button class="tab active" data-view="geral">Geral</button>
-      <button class="tab" data-view="persona">Persona</button>
-      <button class="tab" data-view="equip">Equipamentos</button>
-      <button class="tab" data-view="magias">Magias</button>
-      <button class="tab" data-view="vinculos">Vínculos</button>
-      <button class="tab" data-view="notes">Anotações</button>
+  <button class="tab active" data-view="acessorapido">Acesso Rápido</button>
+  <button class="tab" data-view="persona">Persona</button>
+  <button class="tab" data-view="equip">Equipamentos</button>
+  <button class="tab" data-view="vinculos">Vínculos</button>
+  <button class="tab" data-view="notes">Anotações</button>
     </nav>
 
     <!-- VIEW: GERAL -->
-    <div class="view active" id="geral">
-      <main class="grid two">
-        <!-- IDENTIFICAÇÃO -->
+  <div class="view active" id="acessorapido">
+      <main class="grid one">
+        <!-- ACESSO RÁPIDO -->
         <section class="card">
-          <div class="section-title"><div class="bar"></div><h2>Identificação</h2></div>
-          <div class="row row3">
-            <div><label>Nome</label><input id="CharName" placeholder="Seu personagem"/></div>
-            <div><label>Jogador</label><input id="CharPlayer" placeholder="Seu nome"/></div>
-            <div><label>Apelido</label><input id="CharAlias" placeholder="(opcional)"/></div>
+          <div class="section-title"><div class="bar"></div><h2>Informações do Personagem</h2></div>
+          <div class="row row2">
+            <div><label>Classe</label><input id="CharClass" placeholder="Classe"/></div>
+            <div><label>Nível</label><input id="CharLvl" type="number" min="1" max="99" value="1"/></div>
           </div>
-          <div class="row row3">
-            <div><label>Classe</label><input id="CharClass" placeholder="Ex.: Calouro"/></div>
-            <div><label>Arcana</label>
-              <select id="CharArcana"></select>
-            </div>
-            <div><label>Nível (CNv)</label><input id="CharLvl" type="number" min="1" max="99" value="1"/></div>
+          <div class="row row2">
+            <div><label>Arcana</label><select id="CharArcana"></select></div>
+            <div><label>Jogador</label><input id="CharPlayer" placeholder="Nome do jogador"/></div>
           </div>
         </section>
 
-        <!-- ATRIBUTOS (COMBATE) -->
         <section class="card">
-          <div class="section-title"><div class="bar"></div><h2>Atributos</h2></div>
-          <div class="row">
-            <div class="stat"><b>STR</b><input id="CharSTR" type="range" min="1" max="5" value="1"><span class="badge" id="bSTR">1</span></div>
-            <div class="stat"><b>MAG</b><input id="CharMAG" type="range" min="1" max="5" value="1"><span class="badge" id="bMAG">1</span></div>
-            <div class="stat"><b>TEC</b><input id="CharTEC" type="range" min="1" max="5" value="1"><span class="badge" id="bTEC">1</span></div>
-            <div class="stat"><b>AGI</b><input id="CharAGI" type="range" min="1" max="5" value="1"><span class="badge" id="bAGI">1</span></div>
-            <div class="stat"><b>VIT</b><input id="CharVIT" type="range" min="1" max="5" value="1"><span class="badge" id="bVIT">1</span></div>
-            <div class="stat"><b>LCK</b><input id="CharLCK" type="range" min="1" max="5" value="1"><span class="badge" id="bLCK">1</span></div>
+          <div class="section-title"><div class="bar"></div><h2>Combate</h2></div>
+          <div class="row row3">
+            <div><label>STR</label><input id="CharSTR" type="range" min="1" max="5" value="1"><span class="badge" id="bSTR">1</span></div>
+            <div><label>MAG</label><input id="CharMAG" type="range" min="1" max="5" value="1"><span class="badge" id="bMAG">1</span></div>
+            <div><label>TEC</label><input id="CharTEC" type="range" min="1" max="5" value="1"><span class="badge" id="bTEC">1</span></div>
           </div>
-          <p class="hint">Distribua 18 pontos entre os 6 atributos (mín. 1, máx. 5).</p>
+          <div class="row row3">
+            <div><label>AGI</label><input id="CharAGI" type="range" min="1" max="5" value="1"><span class="badge" id="bAGI">1</span></div>
+            <div><label>VIT</label><input id="CharVIT" type="range" min="1" max="5" value="1"><span class="badge" id="bVIT">1</span></div>
+            <div><label>LCK</label><input id="CharLCK" type="range" min="1" max="5" value="1"><span class="badge" id="bLCK">1</span></div>
+          </div>
+          <div class="row row3">
+            <div><label>Pontos de Vida</label><input id="MaxHP" readonly/></div>
+            <div><label>Energia/Max</label><input id="EnergyMax" readonly/></div>
+            <div><label>Redução de Dano</label><input id="DmgRed" type="number" min="0" max="99" value="0"/></div>
+          </div>
         </section>
 
-        <!-- SOCIAIS / DERIVADOS -->
         <section class="card">
           <div class="section-title"><div class="bar"></div><h2>Habilidades Sociais</h2></div>
           <div class="row row3">
@@ -76,23 +86,67 @@
             <div><label>Empatia</label><input id="EMPpts" type="number" min="0" max="10" value="0"/></div>
           </div>
           <div class="row row3">
-            <div><label>Charme</label><input id="CHAPts" type="number" min="0" max="10" value="0"/></div>
             <div><label>Expressão</label><input id="EXPPts" type="number" min="0" max="10" value="0"/></div>
             <div><label>Coragem</label><input id="COUPts" type="number" min="0" max="10" value="0"/></div>
+            <div><label>Charme</label><input id="CHAPts" type="number" min="0" max="10" value="0"/></div>
           </div>
         </section>
 
         <section class="card">
-          <div class="section-title"><div class="bar"></div><h2>Derivados</h2></div>
-          <div class="der">
-            <div class="panel"><strong>Pontos de Vida</strong><div class="value pv" id="MaxHP">—</div></div>
-            <div class="panel"><strong>Energia</strong><div class="value en" id="EnergyMax">—</div></div>
+          <div class="section-title"><div class="bar"></div><h2>Aspectos & Buffs</h2></div>
+          <div class="row row2">
+            <div><label>Aspectos</label><input id="Aspectos" placeholder="Aspectos"/></div>
+            <div><label>Pontos de Aspecto</label><input id="AspectPoints" type="number" min="0" max="99" value="0"/></div>
           </div>
           <div class="row row2">
-            <div><label>Redução de Dano</label><input id="DmgRed" type="number" min="0" max="99" value="0"/></div>
-            <div><label>Iniciativa (AGI)</label><input id="Init" type="number" value="1" readonly/></div>
+            <div><label>Buffs/Condições</label><input id="Buffs" placeholder="Buffs ou condições"/></div>
           </div>
-          <p class="hint">PV = 25 + ((5 + VIT) × CNv) • Energia = VIT + ⌊CNv/2⌋</p>
+        </section>
+
+        <section class="card">
+          <div class="section-title"><div class="bar"></div><h2>Persona</h2></div>
+          <div class="row row2">
+            <div><label>Nome</label><input id="PerName" placeholder="Nome da Persona"/></div>
+            <div><label>Convicção</label><input id="Conviction" placeholder="Convicção"/></div>
+          </div>
+          <div class="row row2">
+            <div><label>Habilidade Natural</label><input id="NaturalSkill" placeholder="Habilidade natural"/></div>
+            <div><label>Nível</label><input id="PerLvl" type="number" min="1" max="99" value="1"/></div>
+          </div>
+          <div class="row row2">
+            <div><label>SP</label><input id="PerSP" type="number" min="0" max="999" value="0"/></div>
+            <div><label>Tipos</label><input id="PerTypes" placeholder="Tipos"/></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-title"><div class="bar"></div><h2>Equipamento</h2></div>
+          <div class="row row3">
+            <div><label>Arma</label><input id="Weapon" placeholder="Arma"/></div>
+            <div><label>Dano</label><input id="WeaponDmg" placeholder="Dano"/></div>
+            <div><label>Alcance</label><input id="WeaponReach" placeholder="Alcance"/></div>
+          </div>
+          <div class="row row2">
+            <div><label>Efeito</label><input id="WeaponEffect" placeholder="Efeito"/></div>
+          </div>
+          <div class="row row2">
+            <div><label>Armadura</label><input id="Armor" placeholder="Armadura"/></div>
+            <div><label>Redução de Dano</label><input id="ArmorDmgRed" placeholder="Redução de dano"/></div>
+          </div>
+          <div class="row row2">
+            <div><label>Efeito</label><input id="ArmorEffect" placeholder="Efeito"/></div>
+          </div>
+          <div class="row row2">
+            <div><label>Acessório</label><input id="Accessory" placeholder="Acessório"/></div>
+            <div><label>Efeito</label><input id="AccessoryEffect" placeholder="Efeito"/></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-title"><div class="bar"></div><h2>Resistências</h2></div>
+          <div class="row row2">
+            <div><label>Resistências</label><input id="Resistances" placeholder="Resistências"/></div>
+          </div>
         </section>
 
         <section class="card">
@@ -102,11 +156,7 @@
             <button id="load">Carregar</button>
             <button id="export">Exportar JSON</button>
             <button id="import">Importar JSON</button>
-            <button id="fill">Preencher PDF</button>
-            <button id="png">Exportar PNG</button>
-            <button id="print">Imprimir</button>
-            <button id="tests">Testes</button>
-            <input id="pdfFile" type="file" accept="application/pdf" style="display:none" />
+            <button id="reset">Resetar Ficha</button>
           </div>
           <p class="hint">Em testes por favor relevar se ocorrer algum erro.</p>
         </section>
@@ -119,7 +169,7 @@
     </div>
 
     <!-- VIEW: PERSONA -->
-    <div class="view" id="persona">
+  <div class="view" id="persona">
       <section class="card">
         <div class="section-title"><div class="bar"></div><h2>Persona — Identidade</h2></div>
         <div class="row row3">
@@ -129,6 +179,27 @@
         </div>
         <label>Notas</label>
         <textarea id="PerNotes" placeholder="Traços, origem mítica, gatilhos de despertar..."></textarea>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><div class="bar"></div><h2>Magias & Técnicas</h2></div>
+        <div class="actions"><button class="mini" id="add-spell">+ Adicionar</button></div>
+        <div class="hint">SPELL: Nome da magia/técnica | EFFECT: Efeito | TARGET: Alvo | TYPE: Tipo | TIER: Nível | USES: Usos | REPR: Representação/ícone</div>
+        <table id="tbl-spell">
+          <thead>
+            <tr>
+              <th>SPELL</th>
+              <th>TARGET</th>
+              <th>TYPE</th>
+              <th>EFFECT</th>
+              <th>TIER</th>
+              <th>USES</th>
+              <th>REPR</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </section>
 
       <section class="card">
@@ -142,7 +213,7 @@
     </div>
 
     <!-- VIEW: EQUIPAMENTOS -->
-    <div class="view" id="equip">
+  <div class="view" id="equip">
       <section class="card">
         <div class="section-title"><div class="bar"></div><h2>Equipamentos & Itens</h2></div>
         <div class="actions"><button class="mini" id="add-eq">+ Adicionar</button></div>
@@ -155,17 +226,7 @@
     </div>
 
     <!-- VIEW: MAGIAS -->
-    <div class="view" id="magias">
-      <section class="card">
-        <div class="section-title"><div class="bar"></div><h2>Magias & Técnicas</h2></div>
-        <div class="actions"><button class="mini" id="add-spell">+ Adicionar</button></div>
-        <div class="hint">Nome, tipo (Físico/Fogo/Gelo/Vento/Raio/Nuclear/PSY/Luz/Trevas/Suporte/Controle), custo e efeito.</div>
-        <table id="tbl-spell">
-          <thead><tr><th>Nome</th><th>Tipo</th><th>Custo</th><th>Efeito</th><th></th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </section>
-    </div>
+  <!-- VIEW: MAGIAS (removido, não utilizado)-->
 
     <!-- VIEW: VÍNCULOS -->
     <div class="view" id="vinculos">
@@ -215,7 +276,7 @@
       </section>
     </div>
 
-  </div>
+    </div>
 
   <!-- Scripts do app -->
   <script src="app.js"></script>

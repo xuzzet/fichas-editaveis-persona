@@ -1,3 +1,93 @@
+body.theme-padrao {
+  --ink: #eaf6ff;
+  --ink-dim: #b9c9e8;
+  --bg: #030712;
+  --bg-2: #070e21;
+  --bg-3: #0a1430;
+  --stroke: #1a2f57;
+  --accent: #00caff;
+  --accent-2: #5ef7d4;
+  --danger: #ff4b6e;
+  --ok: #60f5a1;
+}
+
+body.theme-padrao {
+  background-color: var(--bg);
+  background-image: radial-gradient(
+      1000px 600px at 80% 0%,
+      rgba(0, 202, 255, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      1200px 700px at 0% 100%,
+      rgba(94, 247, 212, 0.1),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #070d1b 0%, #051022 60%, #04101e 100%);
+  background-repeat: no-repeat;
+  background-attachment: fixed, fixed, fixed;
+  background-size: cover, cover, cover;
+}
+body.theme-roxo,
+body.theme-claro,
+body.theme-amarelo,
+body.theme-vermelho,
+body.theme-degrade {
+  background: var(--bg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+body.theme-roxo {
+  --accent: #a259ff;
+  --accent-2: #6a00ff;
+  --ink: #f3eaff;
+  --ink-dim: #c7b9e8;
+  --bg: linear-gradient(120deg, #2d1847 0%, #4b2a7b 100%);
+  --bg-2: #3a2060;
+  --bg-3: #4b2a7b;
+  --stroke: #6a00ff;
+}
+body.theme-claro {
+  --accent: #00caff;
+  --accent-2: #5ef7d4;
+  --ink: #222;
+  --ink-dim: #555;
+  --bg: linear-gradient(120deg, #f7faff 0%, #dbefff 100%);
+  --bg-2: #eaf6ff;
+  --bg-3: #dbefff;
+  --stroke: #b9c9e8;
+}
+body.theme-amarelo {
+  --accent: #feef01;
+  --accent-2: #ffd700;
+  --ink: #2d2a00;
+  --ink-dim: #a89c3a;
+  --bg: linear-gradient(120deg, #fffbe6 0%, #fff3a6 100%);
+  --bg-2: #fff9c4;
+  --bg-3: #fff3a6;
+  --stroke: #feef01;
+}
+body.theme-vermelho {
+  --accent: #ff4b6e;
+  --accent-2: #ff7b7b;
+  --ink: #fff0f3;
+  --ink-dim: #ffc2c7;
+  --bg: linear-gradient(120deg, #2a0a18 0%, #4b1a2a 100%);
+  --bg-2: #3a1420;
+  --bg-3: #4b1a2a;
+  --stroke: #ff4b6e;
+}
+body.theme-degrade {
+  --accent: #72b779;
+  --accent-2: #584f79;
+  --ink: #eaf6ff;
+  --ink-dim: #b9c9e8;
+  --bg: linear-gradient(120deg, #72b779 0%, #584f79 100%);
+  --bg-2: #72b779;
+  --bg-3: #584f79;
+  --stroke: #72b779;
+}
 /* Persona 3 Reload — Skin */
 :root {
   --ink: #eaf6ff;
@@ -42,7 +132,7 @@ body {
   background-size: cover, cover, cover;
   font: 500 16px/1.45 Inter, "Noto Sans JP", system-ui, -apple-system, Segoe UI,
     Roboto, Helvetica, Arial;
-  -webkit-tap-highlight-color: rgba(0,202,255,0.2);
+  -webkit-tap-highlight-color: rgba(0, 202, 255, 0.2);
   overscroll-behavior-y: contain;
 }
 .wrap {
@@ -58,7 +148,9 @@ body {
   body {
     font-size: var(--mobile-font);
   }
-  .card, .panel, .brand {
+  .card,
+  .panel,
+  .brand {
     border-radius: var(--mobile-radius);
     padding: 10px;
   }
@@ -79,7 +171,9 @@ body {
     width: 60px;
     height: 10px;
   }
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     font-size: 14px;
     padding: 10px 10px;
     border-radius: 10px;
@@ -92,7 +186,10 @@ body {
   .value {
     font-size: 32px;
   }
-  .grid.two, .row2, .row3, .der {
+  .grid.two,
+  .row2,
+  .row3,
+  .der {
     grid-template-columns: 1fr !important;
     gap: 10px;
   }
@@ -109,7 +206,8 @@ body {
     overflow-x: auto;
     width: 100%;
   }
-  th, td {
+  th,
+  td {
     padding: 8px 8px;
   }
   .row-actions {
@@ -133,12 +231,17 @@ body {
 }
 .brand {
   padding: 14px 18px 12px;
-  background: linear-gradient(180deg, #0b153a, #081330);
+  background: linear-gradient(
+    180deg,
+    var(--bg-3, #0b153a),
+    var(--bg-2, #081330)
+  );
   border: 1px solid var(--stroke);
   border-radius: 12px;
   clip-path: polygon(0 0, 92% 0, 100% 28%, 100% 100%, 0 100%);
   box-shadow: 0 16px 60px rgba(0, 0, 0, 0.55),
     inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: background 0.2s, color 0.2s, border 0.2s;
 }
 .brand h1 {
   margin: 0;
@@ -147,6 +250,8 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: clamp(22px, 3.2vw, 30px);
+  color: var(--ink);
+  transition: color 0.2s;
 }
 .brand .sub {
   margin-top: 4px;
@@ -154,6 +259,7 @@ body {
   color: var(--ink-dim);
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  transition: color 0.2s;
 }
 .tabs {
   display: flex;
@@ -165,7 +271,11 @@ body {
   position: relative;
   cursor: pointer;
   color: var(--ink);
-  background: linear-gradient(180deg, #0b173f, #0a1432);
+  background: linear-gradient(
+    180deg,
+    var(--bg-3, #0b173f),
+    var(--bg-2, #0a1432)
+  );
   border: 1px solid var(--stroke);
   padding: 12px 18px 11px;
   font-weight: 900;
@@ -173,7 +283,8 @@ body {
   text-transform: uppercase;
   font-family: "Barlow Condensed", Inter, sans-serif;
   clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-  transition: border 0.18s ease, box-shadow 0.18s ease, transform 0.06s ease;
+  transition: border 0.18s ease, box-shadow 0.18s ease, transform 0.06s ease,
+    background 0.2s, color 0.2s;
 }
 .tab::after {
   content: "▶";
@@ -190,7 +301,7 @@ body {
   box-shadow: 0 0 0 2px rgba(0, 202, 255, 0.18) inset;
 }
 .tab.active {
-  border-color: #2472a6;
+  border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(0, 202, 255, 0.3) inset;
 }
 .tab.active::after {
@@ -219,8 +330,12 @@ body {
   }
 }
 .card {
-  background: linear-gradient(180deg, var(--bg-2) 0, var(--bg-3) 100%);
-  border: 1px solid var(--stroke);
+  background: linear-gradient(
+    180deg,
+    var(--bg-2, #070e21) 0,
+    var(--bg-3, #0a1430) 100%
+  );
+  border: 1px solid var(--stroke, #1a2f5a);
   border-radius: var(--radius);
   padding: 18px;
   position: relative;
@@ -250,7 +365,8 @@ body {
   font-size: 15px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: #e3f4ff;
+  color: var(--ink, #e3f4ff);
+  transition: color 0.2s;
 }
 .bar {
   height: 12px;
@@ -272,7 +388,7 @@ label {
   letter-spacing: 0.14em;
   font-size: 12px;
   text-transform: uppercase;
-  color: #d4e9ff;
+  color: var(--ink-dim, #d4e9ff);
   font-family: "Barlow Condensed", Inter, sans-serif;
 }
 input,
@@ -281,12 +397,13 @@ textarea {
   width: 100%;
   padding: 12px 14px;
   color: var(--ink);
-  background: #091537;
-  border: 1px solid #1a2f5a;
+  background: var(--bg-2, #091537);
+  border: 1.5px solid var(--stroke, #1a2f5a);
   border-radius: 14px;
   outline: none;
   font-size: 15px;
   min-width: 0;
+  transition: background 0.2s, color 0.2s, border 0.2s;
 }
 input:focus,
 select:focus,
@@ -359,7 +476,7 @@ textarea {
   padding: 6px 10px;
   border: 1px solid #28467a;
   border-radius: 10px;
-  background: #0a1330;
+  background: var(--bg-2, #0a1430);
   font-weight: 900;
   font-family: "Barlow Condensed";
   min-width: 0;
@@ -371,8 +488,8 @@ textarea {
   min-width: 0;
 }
 .panel {
-  background: #0a1330;
-  border: 1px solid #1a2f5a;
+  background: var(--bg-2, #0a1330);
+  border: 1px solid var(--stroke, #1a2f5a);
   border-radius: 16px;
   padding: 14px 16px;
   display: flex;
@@ -412,12 +529,12 @@ th,
 td {
   text-align: left;
   padding: 10px 12px;
-  background: #0a1432;
-  border: 1px solid #1a2f5a;
+  background: var(--bg-2, #0a1432);
+  border: 1px solid var(--stroke, #1a2f5a);
   min-width: 0;
 }
 th {
-  background: #0b1738;
+  background: var(--bg-3, #0b1738);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -443,8 +560,8 @@ th:last-child {
   padding: 6px 10px;
   border-radius: 10px;
   border: 1px solid #28467a;
-  background: #0a1430;
-  color: #dff1ff;
+  background: var(--bg-2, #0a1430);
+  color: var(--ink, #dff1ff);
   font-weight: 800;
   cursor: pointer;
   font-family: "Barlow Condensed";
@@ -460,7 +577,11 @@ button {
   cursor: pointer;
   border: 1px solid var(--stroke);
   color: var(--ink);
-  background: linear-gradient(180deg, #0d1a3d, #0b1634);
+  background: linear-gradient(
+    180deg,
+    var(--bg-3, #0d1a3d),
+    var(--bg-2, #0b1634)
+  );
   padding: 12px 16px;
   border-radius: 12px;
   font-weight: 900;
