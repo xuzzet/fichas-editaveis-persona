@@ -127,8 +127,8 @@ const EL_IDS = {
     // Limpa notas de teste
     const testsOut = document.getElementById('tests-out');
     if (testsOut) testsOut.textContent = 'Clique em Testes para rodar as verificações.';
-    // Remove dados do localStorage
-    localStorage.removeItem('ficha-persona');
+    // Remove dados do localStorage (mesma chave usada para salvar)
+    localStorage.removeItem('ficha-yby-p3r-skin');
   }
 
   // Adiciona evento ao botão de reset
@@ -162,7 +162,7 @@ const ids = {
   MaxHP: $("#MaxHP"), EnergyMax: $("#EnergyMax"), DmgRed: $("#DmgRed"),
   KNOPts: $("#KNOPts"), DISPts: $("#DISPts"), EMPpts: $("#EMPpts"), EXPPts: $("#EXPPts"), COUPts: $("#COUPts"), CHAPts: $("#CHAPts"),
   Aspectos: $("#Aspectos"), AspectPoints: $("#AspectPoints"), Buffs: $("#Buffs"),
-  PerName: $("#PerName"), Conviction: $("#Conviction"), NaturalSkill: $("#NaturalSkill"), PerLvl: $("#PerLvl"), PerSP: $("#PerSP"), PerTypes: $("#PerTypes"),
+  PerName: $("#PerName"), PerArcana: $("#PerArcana"), PerNotes: $("#PerNotes"), Conviction: $("#Conviction"), NaturalSkill: $("#NaturalSkill"), PerLvl: $("#PerLvl"), PerSP: $("#PerSP"), PerTypes: $("#PerTypes"),
   Weapon: $("#Weapon"), WeaponDmg: $("#WeaponDmg"), WeaponReach: $("#WeaponReach"), WeaponEffect: $("#WeaponEffect"),
   Armor: $("#Armor"), ArmorDmgRed: $("#ArmorDmgRed"), ArmorEffect: $("#ArmorEffect"),
   Accessory: $("#Accessory"), AccessoryEffect: $("#AccessoryEffect"),
@@ -257,10 +257,13 @@ function initApp() {
       const reader = new FileReader();
       reader.onload = function(e) {
         preview.innerHTML = `<img src='${e.target.result}' alt='ícone' style='max-width:32px;max-height:32px;border-radius:6px;'/>`;
+        // store as attribute so snapshot can read it
+        preview.dataset.repr = e.target.result;
       };
       reader.readAsDataURL(file);
     } else {
       preview.innerHTML = '';
+      preview.dataset.repr = '';
     }
   });
       spellBody.appendChild(tr);
@@ -272,9 +275,14 @@ function initApp() {
       tsel.value = data.tipo||"Físico"; 
       tr.querySelector('.sp-c').value = data.custo||""; 
       tr.querySelector('.sp-e').value = data.efeito||""; 
+      // if the spell data contains a representation (data URL), restore preview
+      if (data.repr) {
+        preview.innerHTML = `<img src='${data.repr}' alt='ícone' style='max-width:32px;max-height:32px;border-radius:6px;'/>`;
+        preview.dataset.repr = data.repr;
+      }
       tr.querySelector('.del').addEventListener('click', ()=> tr.remove());
   }
-  function getSpells(){ return Array.from(spellBody.querySelectorAll('tr')).map(tr=>({ nome: tr.querySelector('.sp-n').value, tipo: tr.querySelector('.sp-t').value, custo: tr.querySelector('.sp-c').value, efeito: tr.querySelector('.sp-e').value })); }
+  function getSpells(){ return Array.from(spellBody.querySelectorAll('tr')).map(tr=>({ nome: tr.querySelector('.sp-n').value, tipo: tr.querySelector('.sp-t').value, custo: tr.querySelector('.sp-c').value, efeito: tr.querySelector('.sp-e').value, repr: tr.querySelector('.icone-preview')?.dataset?.repr||'' })); }
 
   // ====== Vínculos ======
   const linkBody = $("#tbl-link tbody");
@@ -331,7 +339,15 @@ function initApp() {
 
   // ====== Persistência ======
   function snapshot(){
+    // collect affinities
     const affin = {}; ELEMENTS.forEach(e=>{ const id = 'AF_'+EL_IDS[e]; const sel = document.getElementById(id); affin[e] = sel? sel.value : 'Normal'; });
+    // portrait src if present
+    const portraitSrc = document.querySelector('#portraitPreview img')?.src || '';
+    // background fields
+    const bgEls = Array.from(document.querySelectorAll('[id^="bg"]'));
+    const background = {};
+    bgEls.forEach(el=> background[el.id] = el.value||'');
+
     return {
       id:"ficha-yby-p3r-skin",
       acessoRapido:{
@@ -340,23 +356,75 @@ function initApp() {
         MaxHP: ids.MaxHP?.value||"", EnergyMax: ids.EnergyMax?.value||"", DmgRed: ids.DmgRed?.value||"",
         KNOPts: ids.KNOPts?.value||"", DISPts: ids.DISPts?.value||"", EMPpts: ids.EMPpts?.value||"", EXPPts: ids.EXPPts?.value||"", COUPts: ids.COUPts?.value||"", CHAPts: ids.CHAPts?.value||"",
         Aspectos: ids.Aspectos?.value||"", AspectPoints: ids.AspectPoints?.value||"", Buffs: ids.Buffs?.value||"",
-        PerName: ids.PerName?.value||"", Conviction: ids.Conviction?.value||"", NaturalSkill: ids.NaturalSkill?.value||"", PerLvl: ids.PerLvl?.value||"", PerSP: ids.PerSP?.value||"", PerTypes: ids.PerTypes?.value||"",
+        PerName: ids.PerName?.value||"", PerArcana: ids.PerArcana?.value||"", Conviction: ids.Conviction?.value||"", NaturalSkill: ids.NaturalSkill?.value||"", PerLvl: ids.PerLvl?.value||"", PerSP: ids.PerSP?.value||"", PerTypes: ids.PerTypes?.value||"",
         Weapon: ids.Weapon?.value||"", WeaponDmg: ids.WeaponDmg?.value||"", WeaponReach: ids.WeaponReach?.value||"", WeaponEffect: ids.WeaponEffect?.value||"",
         Armor: ids.Armor?.value||"", ArmorDmgRed: ids.ArmorDmgRed?.value||"", ArmorEffect: ids.ArmorEffect?.value||"",
         Accessory: ids.Accessory?.value||"", AccessoryEffect: ids.AccessoryEffect?.value||"",
         Resistances: ids.Resistances?.value||""
       },
-      notes: { diary: ids.NotesDiary?.value||"", goals: ids.NotesGoals?.value||"", clues: getClues(), contacts: getCtts() }
+      persona: { PerName: ids.PerName?.value||"", PerArcana: ids.PerArcana?.value||"", PerLvl: ids.PerLvl?.value||"", PerNotes: ids.PerNotes?.value||"", PerSP: ids.PerSP?.value||"", PerTypes: ids.PerTypes?.value||"" },
+      affinities: affin,
+      spells: getSpells(),
+      equip: getEquip(),
+      links: getLinks(),
+      notes: { diary: ids.NotesDiary?.value||"", goals: ids.NotesGoals?.value||"", clues: getClues(), contacts: getCtts() },
+      portrait: { src: portraitSrc },
+      background: background
     };
   }
   function applySnapshot(data){
     if(!data) return;
-  const g = data.acessoRapido||{}; Object.keys(g).forEach(k=>{ if(ids[k]){ if(ids[k].tagName==="DIV") ids[k].textContent=g[k]; else ids[k].value=g[k]; } });
-  recalc();
+  const g = data.acessoRapido||{};
+  Object.keys(g).forEach(k=>{ if(ids[k]){ if(ids[k].tagName==="DIV") ids[k].textContent=g[k]; else ids[k].value=g[k]; } });
+
+  // persona
+  if (data.persona) {
+    ids.PerName.value = data.persona.PerName || ids.PerName.value || '';
+    ids.PerArcana.value = data.persona.PerArcana || ids.PerArcana.value || '';
+    ids.PerLvl.value = data.persona.PerLvl || ids.PerLvl.value || 1;
+    ids.PerNotes.value = data.persona.PerNotes || ids.PerNotes.value || '';
+    ids.PerSP.value = data.persona.PerSP || ids.PerSP.value || '';
+    ids.PerTypes.value = data.persona.PerTypes || ids.PerTypes.value || '';
+  }
+
+  // Afinidades
+  if (data.affinities) {
+    ELEMENTS.forEach(e=>{
+      const sel = document.getElementById('AF_'+EL_IDS[e]); if (sel) sel.value = data.affinities[e] || 'Normal';
+    });
+  }
+
+  // Recria tabelas dinâmicas
+  eqBody.innerHTML = '';
+  (data.equip||[]).forEach(addEq);
+
+  spellBody.innerHTML = '';
+  (data.spells||[]).forEach(addSpell);
+
+  linkBody.innerHTML = '';
+  (data.links||[]).forEach(addLink);
+
+  clueBody.innerHTML = '';
+  (data.notes?.clues||[]).forEach(addClue);
+
+  cttBody.innerHTML = '';
+  (data.notes?.contacts||[]).forEach(addCtt);
+
+  // Notas gerais
   ids.NotesDiary.value = data.notes?.diary || "";
   ids.NotesGoals.value = data.notes?.goals || "";
-  clueBody.innerHTML = ""; (data.notes?.clues||[]).forEach(addClue);
-  cttBody.innerHTML = ""; (data.notes?.contacts||[]).forEach(addCtt);
+
+  // Portrait
+  if (data.portrait && data.portrait.src) {
+    const prev = document.getElementById('portraitPreview'); if (prev) prev.innerHTML = `<img src='${data.portrait.src}' alt='Retrato' style='max-width:180px;max-height:220px;border-radius:12px;border:2px solid var(--accent);'/>`;
+  }
+
+  // Background
+  if (data.background) {
+    Object.entries(data.background).forEach(([id,val])=>{ const el = document.getElementById(id); if(el) el.value = val; });
+  }
+
+  recalc();
   }
 
   document.getElementById("save").addEventListener("click", ()=>{
@@ -373,7 +441,7 @@ function initApp() {
     alert("Ficha salva.");
   });
   document.getElementById("load").addEventListener("click", ()=>{ const raw=localStorage.getItem("ficha-yby-p3r-skin"); if(!raw) return alert("Nada salvo."); try{ applySnapshot(JSON.parse(raw)); alert("Ficha carregada."); }catch(e){ alert("Falha ao carregar."); } });
-  document.getElementById("export").addEventListener("click", ()=>{ const blob = new Blob([JSON.stringify(snapshot(),null,2)], {type:"application/json"}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=((ids.CharName.value||'ficha')+".json"); a.click(); URL.revokeObjectURL(a.href); });
+  document.getElementById("export").addEventListener("click", ()=>{ const blob = new Blob([JSON.stringify(snapshot(),null,2)], {type:"application/json"}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=((ids.CharPlayer?.value||'ficha')+".json"); a.click(); URL.revokeObjectURL(a.href); });
   document.getElementById("import").addEventListener("click", ()=>{ const i=document.createElement('input'); i.type='file'; i.accept='application/json'; i.onchange=()=>{ const f=i.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ applySnapshot(JSON.parse(r.result)); alert('Importado.'); }catch(e){ alert('Falha ao importar.'); } }; r.readAsText(f); }; i.click(); });
 
   // ====== PDF ======
