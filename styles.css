@@ -672,6 +672,127 @@ button:hover {
   display: block;
   min-width: 0;
 }
+/* Uniformizar espaçamento entre cards em todas as views como Acesso Rápido */
+.view .card {
+  margin-bottom: 18px; /* mesmo passo usado na grid principal */
+}
+.view .card:last-child {
+  margin-bottom: 0;
+}
+@media (max-width: 600px) {
+  .view .card {
+    margin-bottom: 12px;
+  }
+}
+
+/* When cards are direct children of a .grid, prefer the grid's gap instead of margins */
+.view .grid > .card {
+  margin-bottom: 0; /* grid gap will handle spacing */
+}
+@media (max-width: 600px) {
+  .view .grid > .card {
+    margin-bottom: 0;
+  }
+}
+/* Feitos: estilos específicos para tornar a tabela mais legível e responsiva */
+.feitos-msg {
+  display: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.feitos-msg.info {
+  background: rgba(0, 202, 255, 0.08);
+  color: var(--accent-2);
+  border: 1px solid rgba(0, 202, 255, 0.12);
+}
+.feitos-msg.warn {
+  background: rgba(255, 75, 110, 0.06);
+  color: var(--danger);
+  border: 1px solid rgba(255, 75, 110, 0.12);
+}
+
+#tbl-feitos {
+  width: 100%;
+  margin-top: 12px;
+}
+#tbl-feitos thead th {
+  background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+  font-size: 12px;
+  padding: 8px 10px;
+}
+#tbl-feitos tbody tr {
+  /* avoid movement on hover: keep subtle visual feedback only */
+  transition: background-color 0.12s ease, box-shadow 0.12s ease;
+}
+#tbl-feitos tbody tr:hover {
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+#tbl-feitos td {
+  vertical-align: middle;
+  padding: 8px 10px;
+}
+#tbl-feitos .ft-desc {
+  min-height: 64px;
+  max-height: 160px;
+  resize: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  background: linear-gradient(180deg, var(--bg-2), transparent);
+}
+#tbl-feitos .ft-level {
+  width: 88px;
+  max-width: 88px;
+}
+#tbl-feitos .ft-rank {
+  width: 72px;
+  max-width: 72px;
+}
+#tbl-feitos .ft-id {
+  min-width: 160px;
+}
+#tbl-feitos .ft-sel {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 720px) {
+  /* mobile: stack each row as card-like block */
+  #tbl-feitos,
+  #tbl-feitos thead,
+  #tbl-feitos tbody,
+  #tbl-feitos th,
+  #tbl-feitos td,
+  #tbl-feitos tr {
+    display: block;
+    width: 100%;
+  }
+  #tbl-feitos thead {
+    display: none;
+  }
+  #tbl-feitos tbody tr {
+    margin-bottom: 12px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+    border-radius: 12px;
+    padding: 10px;
+  }
+  #tbl-feitos td {
+    padding: 6px 8px;
+    border: none;
+    background: transparent;
+  }
+  #tbl-feitos .row-actions {
+    justify-content: flex-start;
+    margin-top: 8px;
+  }
+  #tbl-feitos .ft-desc {
+    min-height: 56px;
+  }
+}
 @media print {
   @page {
     size: A4;

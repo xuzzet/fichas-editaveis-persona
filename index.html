@@ -38,6 +38,7 @@
     <nav class="tabs" id="tabs">
   <button class="tab active" data-view="acessorapido">Acesso Rápido</button>
   <button class="tab" data-view="persona">Persona</button>
+    <button class="tab" data-view="feitos">Feitos</button>
   <button class="tab" data-view="equip">Equipamentos</button>
   <button class="tab" data-view="vinculos">Vínculos</button>
   <button class="tab" data-view="notes">Anotações</button>
@@ -180,6 +181,22 @@
         </section>
       </main>
     </div>
+
+    <!-- VIEW: FEITOS -->
+  <div class="view" id="feitos">
+    <section class="card">
+      <div class="section-title"><div class="bar"></div><h2>Feitos</h2></div>
+      <div class="actions"><button class="mini" id="add-feito">+ Adicionar Feito</button></div>
+      <div id="feitos-msg" class="feitos-msg" style="display:none;margin-top:8px;"></div>
+      <div class="hint">Feitos são habilidades especiais; níveis pares apenas (2–20). Alguns possuem requisitos.</div>
+      <table id="tbl-feitos">
+        <thead>
+          <tr><th>Feito</th><th>Rank</th><th>Nível</th><th>Descrição</th><th>Selecionado</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </div>
 
     <!-- VIEW: BACKGROUND -->
     <div class="view" id="background">

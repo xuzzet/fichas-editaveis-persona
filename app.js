@@ -117,7 +117,7 @@ const EL_IDS = {
       }
     });
     // Limpa tabelas dinâmicas se existirem
-    ['tbl-eq','tbl-spell','tbl-link','tbl-clue','tbl-ctt'].forEach(id => {
+    ['tbl-eq','tbl-spell','tbl-link','tbl-clue','tbl-ctt','tbl-feitos'].forEach(id => {
       const tbody = document.querySelector(`#${id} tbody`);
       if (tbody) tbody.innerHTML = '';
     });
@@ -149,6 +149,38 @@ function initTabs() {
 
 // ===== Inicialização de Arcana =====
 const ARCANAS = ["", "0 - Louco","I - Mago","II - Sacerdotisa","III - Imperatriz","IV - Imperador","V - Hierofante","VI - Enamorados","VII - Carruagem","VIII - Força","IX - Eremita","X - Roda da Fortuna","XI - Justiça","XII - Enforcado","XIII - Morte","XIV - Temperança","XV - Diabo","XVI - Torre","XVII - Estrela","XVIII - Lua","XIX - Sol","XX - Julgamento","XXI - Mundo"];
+// ===== Lista de Feitos (baseada no trecho do livro fornecido) =====
+const FEITOS_PER_MILESTONE = 1; // por padrão 1 feito a cada 2 níveis (configurável multiplicador)
+const FEITOS_LIST = [
+  { id: 'mente_aberta', name: 'Mente Aberta', desc: 'Ganhe um uso extra de uma magia à sua escolha, de Tier III ou abaixo, da lista de qualquer uma de suas Personae.' },
+  { id: 'longe_do_fim', name: 'Longe do Fim', desc: 'Cada rank aumenta seu Limite de Energia em 2.' },
+  { id: 'habil', name: 'Hábil', desc: 'Concede +1 para uma Habilidade de Combate ou +3 para uma Habilidade Social.' },
+  { id: 'reflexao', name: 'Reflexão', desc: 'Você pode alterar um dos Aspectos Livres do seu personagem.' },
+  { id: 'emergencial', name: 'Emergencial', desc: 'Uma vez por semana, pague 1 Ponto de Aspecto para ganhar 1 Ponto de Recurso extra que expira no fim da sessão. Ranks aumentam a quantidade em 0.5 por rank.' },
+  { id: 'furioso', name: 'Furioso', desc: 'Como ação Rápida, receba os efeitos de Fúria (não pode ser curado até o fim do próximo turno).', unique:true },
+  { id: 'auxilio_altruista', name: 'Auxílio Altruísta', desc: 'Como ação padrão, sacrifique até 50% do seu PV atual para aumentar o PV de um alvo adjacente. Cada rank aumenta em 10%.' },
+  { id: 'espirito', name: 'Espírito', desc: 'Uma vez por rodada, troque de Persona como ação livre ao atingir Fraqueza de Sombra ou Golpe Crítico.', unique:true },
+  { id: 'aspecto_poderoso', name: 'Aspecto Poderoso', desc: 'Cada rank aumenta o número de Pontos de Aspecto que você recebe no começo de cada sessão em 1.', unique:true },
+  { id: 'explorador', name: 'Explorador', desc: 'Considere seu Tier de Disciplina como +2 para procurar no Metaverso; rerole um teste de procura por teste.', unique:true },
+  { id: 'espadas', name: 'Especialização em Espadas', desc: 'Com uma espada equipada, você ganha DDC +1 contra magias Físicas declaradas contra você.', unique:true },
+  { id: 'manoplas', name: 'Especialização em Manoplas', desc: 'Usando manoplas, você ganha Fortificar Todos TEC/2.', unique:true },
+  { id: 'lancas', name: 'Especialização em Lanças', desc: 'Com lança equipada, quando inimigo entra no alcance, você pode desferir um ataque básico como Interromper.', unique:true },
+  { id: 'chicotes', name: 'Especialização em Chicotes', desc: 'Com chicote, 25% de chance de causar Pânico por 1 turno ao acertar com ataque básico.', unique:true },
+  { id: 'arcos', name: 'Especialização em Arcos', desc: 'Trate alcance de arcos como o dobro; role 1d6 para possível dano extra.', unique:true },
+  { id: 'armas_fogo', name: 'Especialização em Armas de Fogo', desc: 'Acertar com arma de fogo na distância máxima concede +1 DDC contra o alvo até o seu próximo turno.', unique:true },
+  { id: 'escudos_placas', name: 'Especialização em Escudos e Placas', desc: 'Com escudo/placa equipado, ação completa para postura defensiva e ganhar Resistir Todos até seu próximo turno.', unique:true },
+  { id: 'adagas', name: 'Especialização em Adagas', desc: 'Ataques com adagas têm +1 de alcance e causam +AGI dano do mesmo tipo do dano original.', unique:true },
+  { id: 'gladiador', name: 'Físico do Gladiador', desc: 'Ao declarar uma magia Física que aplica Status, reduza chance de Status para 0% para aumentar FOR em 2 para cálculo de dano.', unique:true },
+  { id: 'transe_monge_fogo', name: 'Transe do Monge de Fogo', desc: 'Ao causar dano com magia de Fogo, você pode incendiar o espaço por 2 rodadas. Só se sua Persona for do Tipo Fogo.', reqPersonaType:'Fogo', unique:true },
+  { id: 'toque_rainha_gelo', name: 'Toque da Rainha de Gelo', desc: 'Ao derrotar com magia de Gelo, aumente duração de 1 Buff ativo em 2 rodadas. Requer Tipo Gelo.', reqPersonaType:'Gelo' },
+  { id: 'investida_ventos', name: 'Investida da Cavalaria dos Ventos', desc: 'Após acertar com magia de Vento, você pode usar valor anotado como rolagem de acerto para declarar outra magia de Vento. Requer Tipo Vento.', reqPersonaType:'Vento' },
+  { id: 'maos_lorde_raio', name: 'Mãos do Lorde do Raio', desc: 'Gaste 1 Energia ao declarar magia de Raio para rolar chance de Choque antes do acerto. Requer Tipo Raio.', reqPersonaType:'Raio' },
+  { id: 'sombra_assassino_nuclear', name: 'Sombra do Assassino Nuclear', desc: 'Aumente limite de Acúmulo em 2 e pode gastar Contadores para ativar efeitos sem removê-los. Requer Tipo Nuclear.', reqPersonaType:'Nuclear' },
+  { id: 'caos_psicocinetico', name: 'Caos do Vidente Psicocinético', desc: 'Ao Ampliarem efeito de Status, role 1d10 para tabela de Efeitos Ampliados. Requer Tipo PSY.', reqPersonaType:'PSY' },
+  { id: 'voto_clerigo_luz', name: 'Voto do Clérigo da Luz', desc: 'Ao causar dano com magia de Luz, gaste 1 Energia para ganhar PV temporários (MAG ou TEC). Requer Tipo Luz.', reqPersonaType:'Luz' },
+  { id: 'ritual_herege_trevas', name: 'Ritual do Herege das Trevas', desc: 'Ao derrotar Sombra com magia do Tipo Trevas, cause dano adicional de Trevas a alvos vistos. Requer Tipo Trevas.', reqPersonaType:'Trevas' },
+  { id: 'vanguarda_onipotente', name: 'Vanguarda Onipotente', desc: 'Ao acertar Crítico com magia Onipotente, ignore testes de esquiva de todos os alvos.', unique:true }
+];
 function initArcanaSelects() {
   const arcSel1 = document.getElementById("CharArcana");
   const arcSel2 = document.getElementById("PerArcana");
@@ -195,7 +227,72 @@ function initApp() {
   initTabs();
   initArcanaSelects();
   buildAffinityTable();
+  buildFeitosUI();
   // ...existing code...
+}
+
+// ===== FEITOS UI & Lógica =====
+function buildFeitosUI(){
+  const body = document.querySelector('#tbl-feitos tbody');
+  const btn = document.getElementById('add-feito');
+  function setMsg(msg, type='info'){
+    const el = document.getElementById('feitos-msg'); if(!el) return; el.style.display = msg? 'block':'none'; el.textContent = msg; el.className = 'feitos-msg '+(type||'info');
+    setTimeout(()=>{ if(el) el.style.display='none'; }, 4000);
+  }
+  function addFeito(data={id:'', rank:1, level:2, desc:'', selected:false}){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><select class="ft-id"><option value="">-- escolha --</option></select></td>
+                    <td><input class="ft-rank" type="number" min="1" max="5" value="${data.rank||1}" style="width:64px;"/></td>
+                    <td><select class="ft-level"></select></td>
+                    <td><textarea class="ft-desc" readonly></textarea></td>
+                    <td style="text-align:center"><input type="checkbox" class="ft-sel" ${data.selected? 'checked':''}/></td>
+                    <td class="row-actions"><button class="mini del">Remover</button></td>`;
+    body.appendChild(tr);
+    const idSel = tr.querySelector('.ft-id'); const rankIn = tr.querySelector('.ft-rank'); const lvlSel = tr.querySelector('.ft-level'); const desc = tr.querySelector('.ft-desc'); const sel = tr.querySelector('.ft-sel');
+    FEITOS_LIST.forEach(f=>{ const o=document.createElement('option'); o.value=f.id; o.textContent=f.name; idSel.appendChild(o); });
+    // level options (even 2..20)
+    for(let L=2;L<=20;L+=2){ const o=document.createElement('option'); o.value=L; o.textContent=L; lvlSel.appendChild(o); }
+    if(data.id) idSel.value = data.id;
+    desc.value = data.desc|| (FEITOS_LIST.find(f=>f.id===idSel.value)?.desc||'');
+    if(data.level) lvlSel.value = data.level;
+
+    function refreshConstraints(){
+      // unique prevention
+      const chosen = Array.from(document.querySelectorAll('.ft-id')).map(s=>s.value).filter(v=>v);
+      const dup = chosen.filter(v=> chosen.filter(x=>x===v).length>1);
+      if(dup.length>0){ setMsg('Este Feito já foi adicionado (único).','warn'); idSel.value=''; desc.value=''; return; }
+      // enforce allowed selected ranks sum
+      const charLvl = clampInt(ids.CharLvl?.value||1,1,99); const allowed = Math.floor(charLvl/2)*FEITOS_PER_MILESTONE;
+      const rows = Array.from(body.querySelectorAll('tr'));
+      let sum=0; const selectedRows=[];
+      rows.forEach(r=>{ const c = r.querySelector('.ft-sel'); const rnk = Number(r.querySelector('.ft-rank').value)||0; const lvl = Number(r.querySelector('.ft-level').value)||0; if(c.checked && lvl<=charLvl){ sum+=rnk; selectedRows.push(r); }});
+      if(sum>allowed){ // unselect last selected rows until within limit
+        setMsg('Limite de ranks de Feitos excedido para seu nível. Desmarcando escolhas recentes.','warn');
+        for(let i=selectedRows.length-1;i>=0 && sum>allowed;i--){ const r=selectedRows[i]; const rnk=Number(r.querySelector('.ft-rank').value)||0; r.querySelector('.ft-sel').checked=false; sum-=rnk; }
+      }
+    }
+
+    idSel.addEventListener('change', ()=>{ const meta = FEITOS_LIST.find(f=>f.id===idSel.value); desc.value = meta? meta.desc : ''; if(meta && meta.unique){ // check duplicates
+        const other = Array.from(document.querySelectorAll('.ft-id')).filter(s=>s!==idSel).some(s=>s.value===idSel.value);
+        if(other){ setMsg('Feito único: já existe na lista.','warn'); idSel.value=''; desc.value=''; }
+      }
+    updateAll(); });
+    rankIn.addEventListener('input', ()=>{ updateAll(); }); lvlSel.addEventListener('change', ()=>{ updateAll(); }); sel.addEventListener('change', ()=>{ updateAll(); });
+    tr.querySelector('.del').addEventListener('click', ()=>{ tr.remove(); updateAll(); });
+
+    function updateAll(){ refreshConstraints(); }
+    updateAll();
+  }
+
+  // expose addFeito so applySnapshot can restore entries
+  window.addFeito = function(d){ addFeito(d); };
+
+  function getFeitos(){ return Array.from(body.querySelectorAll('tr')).map(tr=>({ id: tr.querySelector('.ft-id').value, rank: Number(tr.querySelector('.ft-rank').value)||1, level: Number(tr.querySelector('.ft-level').value)||2, desc: tr.querySelector('.ft-desc').value, selected: !!tr.querySelector('.ft-sel').checked })); }
+
+  // external hooks
+  window.getFeitos = getFeitos;
+
+  btn.addEventListener('click', ()=> addFeito());
 }
 
 (function(){
@@ -382,6 +479,7 @@ function initApp() {
       persona: { PerName: ids.PerName?.value||"", PerArcana: ids.PerArcana?.value||"", PerLvl: ids.PerLvl?.value||"", PerNotes: ids.PerNotes?.value||"", PerSP: ids.PerSP?.value||"", PerTypes: ids.PerTypes?.value||"" },
       affinities: affin,
       spells: getSpells(),
+  feitos: (window.getFeitos? window.getFeitos() : []),
       equip: getEquip(),
       links: getLinks(),
       notes: { diary: ids.NotesDiary?.value||"", goals: ids.NotesGoals?.value||"", clues: getClues(), contacts: getCtts() },
@@ -426,6 +524,12 @@ function initApp() {
 
   cttBody.innerHTML = '';
   (data.notes?.contacts||[]).forEach(addCtt);
+
+  // Feitos
+  try{
+    const fbody = document.querySelector('#tbl-feitos tbody');
+    if(fbody && window.addFeito){ fbody.innerHTML = ''; (data.feitos||[]).forEach(f=> window.addFeito(f)); }
+  }catch(e){}
 
   // Notas gerais
   ids.NotesDiary.value = data.notes?.diary || "";
