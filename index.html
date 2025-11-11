@@ -76,7 +76,7 @@
           </div>
           <div class="row row3">
             <div><label>Pontos de Vida</label><input id="MaxHP" readonly/></div>
-            <div><label>Energia/Max</label><input id="EnergyMax" readonly/></div>
+            <div><label>Mana (PM) / Max</label><input id="EnergyMax" readonly/></div>
             <div><label>Redução de Dano</label><input id="DmgRed" type="number" min="0" max="99" value="0"/></div>
           </div>
         </section>
@@ -93,6 +93,13 @@
             <div><label>Expressão</label><input id="EXPPts" type="number" min="0" max="10" value="0"/></div>
             <div><label>Coragem</label><input id="COUPts" type="number" min="0" max="10" value="0"/></div>
             <div><label>Charme</label><input id="CHAPts" type="number" min="0" max="10" value="0"/></div>
+          </div>
+          <div class="row" style="margin-top:10px;align-items:center;">
+            <div><strong>Pontos Restantes: <span id="social-remaining">7</span></strong></div>
+            <div style="margin-left:12px;color:var(--ink-dim);font-size:13px;" id="social-msg"></div>
+          </div>
+          <div id="social-tier-list" style="margin-top:12px;">
+            <!-- JS irá popular as descrições e tiers aqui -->
           </div>
         </section>
 

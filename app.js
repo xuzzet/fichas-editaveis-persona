@@ -228,6 +228,7 @@ function initApp() {
   initArcanaSelects();
   buildAffinityTable();
   buildFeitosUI();
+  buildSocialUI();
   // ...existing code...
 }
 
@@ -295,6 +296,128 @@ function buildFeitosUI(){
   btn.addEventListener('click', ()=> addFeito());
 }
 
+// ===== Habilidades Sociais: UI e lógica de tiers =====
+function buildSocialUI(){
+  const MAX_POINTS = 7;
+  const idsList = ['KNOPts','DISPts','EMPpts','EXPPts','COUPts','CHAPts'];
+  const skillMeta = {
+    KNOPts: {name:'Conhecimento', titles:['Preguiçoso','Ciente','Sabido','Estudado','Enciclopédico','Erudito'], desc:[
+      'Título: Preguiçoso.',
+      'Tier I — Ciente: uma vez por dia, revelar uma Fraqueza de uma Sombra que você possa ver.',
+      'Tier II — Sabido: uma vez por combate, ganhe +1 DDC contra um ataque que exija teste de esquiva.',
+      'Tier III — Estudado: bônus permanente de +1 FOR, +1 MAG ou +1 TEC, sua escolha.',
+      'Tier IV — Enciclopédico: uma vez por dia conjurar uma magia Tier III ou menor sem gastar Energia.',
+      'Tier V — Erudito: ganha um Aspecto baseado no conhecimento e uma vez por dia pode gastar ação rápida para obter Carga Mental/Carga Poderosa.'
+    ]},
+    DISPts: {name:'Disciplina', titles:['Desatento','Decente','Persistente','Minucioso','Magistral','Transcendente'], desc:[
+      'Tier 0 — Desatento.',
+      'Tier I — Decente: +10 PV e +1 de Limite de Energia.',
+      'Tier II — Persistente: armaduras ganham +2 Redução de dano.',
+      'Tier III — Minucioso: concede um Feito extra.',
+      'Tier IV — Magistral: uma vez por combate, adicione metade do seu Tier de Disciplina (arredondado para baixo) a um teste não ofensivo.',
+      'Tier V — Transcendente: uma vez por dia, ao invés de morrer, retorna com 50% de vida (conta como Interromper) e ganha um Aspecto de resiliência.'
+    ]},
+    EMPpts: {name:'Empatia', titles:['Indiferente','Inofensivo','Gentil','Generoso','Altruísta','Angelical'], desc:[
+      'Tier 0 — Indiferente.',
+      'Tier I — Inofensivo: uma vez por dia, sucesso automático em teste de resistência contra Status Mental.',
+      'Tier II — Gentil: uma vez por dia, remover todos os Status Mentais de um aliado que possa ouvir você (ação livre).',
+      'Tier III — Generoso: uma vez por dia (movimento) reproduz buff de aliado ou aplicar seu buff a aliado por 2 rodadas.',
+      'Tier IV — Altruísta: uma vez por dia, quando consumível não-Especial for usado, role d4; com 3-4 o item não é consumido.',
+      'Tier V — Angelical: até 3x/dia, ao curar, pode redirecionar cura para outro alvo; ganha Aspecto de empatia.'
+    ]},
+    EXPPts: {name:'Expressão', titles:['Monótono','Rudimentar','Eloquente','Inspirador','Tocante','Fascinante'], desc:[
+      'Tier 0 — Monótono.',
+      'Tier I — Rudimentar: uma vez por dia, como movimento, todos aliados podem tentar um Crítico sem gastar Cargas de Sorte.',
+      'Tier II — Eloquente: uma vez por dia (ação rápida), aumentar categoria de esquiva de todos aliados em +1 até fim do próximo turno.',
+      'Tier III — Inspirador: uma vez por dia (ação rápida), tentar causar Fúria em unidades em 12m (chance 25 + Tier*4%).',
+      'Tier IV — Tocante: uma vez por dia (ação padrão), escolha alvo; por 2 rodadas alvo recebe Margem de Crítico -2 e ataques contra ele não podem errar.',
+      'Tier V — Fascinante: uma vez por dia (ação padrão) gasta para dar ação de movimento extra a cada aliado; ganha Aspecto de liderança.'
+    ]},
+    COUPts: {name:'Coragem', titles:['Tímido','Comum','Determinado','Firme','Destemido','Fodão'], desc:[
+      'Tier 0 — Tímido.',
+      'Tier I — Comum: uma vez por dia, ao declarar ataque, pode adicionar Redução de Dano ao cálculo de dano (reduz RDM a 0 até fim do turno).',
+      'Tier II — Determinado: pode escolher falhar resistência para aplicar o mesmo Status ao conjurador.',
+      'Tier III — Firme: escolha ganhar +1 VIT, +1 AGI ou +2 SOR permanente.',
+      'Tier IV — Destemido: quando toma dano de tipos elementais, pode ativar efeito Fortificar <Elemento> 1d10 até o fim do combate.',
+      'Tier V — Fodão: ganha Aspecto de bravura e uma vez por dia pode ignorar penalties por exceder limite de Energia por um turno com custos posteriores.'
+    ]},
+    CHAPts: {name:'Charme', titles:['Sem Graça','Existente','Confiante','Suave','Popular','Debonair'], desc:[
+      'Tier 0 — Sem Graça.',
+      'Tier I — Existente: uma vez por dia, conjurar Pulinpa.',
+      'Tier II — Confiante: uma vez por dia, conjurar Dekaja.',
+      'Tier III — Suave: uma vez por dia, conjurar Marin Karin; pode usar o dobro do Tier de Charme no lugar de TEC.',
+      'Tier IV — Popular: uma vez por dia, como Interromper, pode mudar alvo de ataque inimigo para outro alvo.',
+      'Tier V — Debonair: ganha Aspecto de magnetismo e uma vez por bloco pode usar Tier+2 ao invés de Expressão/Empatia para qualquer teste.'
+    ]}
+  };
+
+  const container = document.getElementById('social-tier-list');
+  const remainingEl = document.getElementById('social-remaining');
+  const msgEl = document.getElementById('social-msg');
+  if(!container || !remainingEl) return;
+
+  // build initial UI blocks
+  container.innerHTML = '';
+  idsList.forEach(id=>{
+    const meta = skillMeta[id];
+    const wrapper = document.createElement('div'); wrapper.className = 'social-skill'; wrapper.style.padding='8px 0'; wrapper.style.borderBottom='1px dashed rgba(255,255,255,0.03)';
+    wrapper.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div style="font-weight:800">${meta.name}</div><div style="text-align:right"><div id="${id}-tier" style="font-weight:900">Tier 0 — ${meta.titles[0]}</div><div id="${id}-short" style="font-size:13px;color:var(--ink-dim)"></div></div></div><div id="${id}-desc" style="margin-top:6px;color:var(--ink);font-size:13px"></div>`;
+    container.appendChild(wrapper);
+  });
+
+  // store previous values to allow clamping
+  const prev = {};
+  idsList.forEach(id=> prev[id] = Number(document.getElementById(id)?.value||0));
+
+  function updateAll(){
+    const values = idsList.map(id=> clampInt(Number(document.getElementById(id).value||0),0,10));
+    const sum = values.reduce((a,b)=>a+b,0);
+    if(sum > MAX_POINTS){
+      // clamp last-changed by reducing it to allowed
+      msgEl.textContent = 'Você só tem 7 pontos para distribuir. Ajustando automaticamente.';
+      setTimeout(()=>{ if(msgEl) msgEl.textContent=''; }, 3500);
+      // try to reduce values proportionally: we'll reduce the last focused field if possible
+    }
+    // enforce per-input allowed = MAX_POINTS - sumOther
+    idsList.forEach((id, idx)=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      const otherSum = sum - Number(el.value||0);
+      const allowed = Math.max(0, MAX_POINTS - otherSum);
+      if(Number(el.value) > allowed){ el.value = allowed; }
+      prev[id] = Number(el.value||0);
+      // update tier display
+      const tier = Math.min(5, Math.max(0, Number(el.value)||0));
+      const meta = skillMeta[id];
+      const tierEl = document.getElementById(id+'-tier');
+      const shortEl = document.getElementById(id+'-short');
+      const descEl = document.getElementById(id+'-desc');
+      if(tierEl) tierEl.textContent = `Tier ${tier} — ${meta.titles[tier] || meta.titles[meta.titles.length-1]}`;
+      if(shortEl) shortEl.textContent = meta.desc[tier] ? meta.desc[tier].split('\n')[0] : '';
+      if(descEl) descEl.textContent = meta.desc[tier] || '';
+    });
+    const newSum = idsList.reduce((s,id)=> s + Number(document.getElementById(id).value||0), 0);
+    remainingEl.textContent = Math.max(0, MAX_POINTS - newSum);
+  }
+
+  // attach listeners
+  idsList.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('focus', ()=> prev[id] = Number(el.value||0));
+    el.addEventListener('input', ()=>{
+      const otherSum = idsList.reduce((s,i)=> s + (i===id?0:Number(document.getElementById(i).value||0)), 0);
+      const allowed = Math.max(0, MAX_POINTS - otherSum);
+      let val = clampInt(Number(el.value||0), 0, 10);
+      if(val > allowed){ el.value = allowed; }
+      updateAll();
+    });
+  });
+
+  // initial render
+  updateAll();
+}
+
 (function(){
   initApp();
   // ...existing code...
@@ -322,7 +445,13 @@ function buildFeitosUI(){
     const lvl = clampInt(ids.CharLvl?.value||1,1,99);
     const vit = clampInt(ids.CharVIT?.value||1,1,5);
     ids.MaxHP.value = 25 + ((5 + vit) * lvl);
-    ids.EnergyMax.value = vit + Math.floor(lvl/2);
+  // Mana (PM) = 15 + ((MAG + 5) * (Dobro do Nível))
+  // calcular Resultado = (MAG + 5) e então multiplicar por (2 * nível)
+  const mag = clampInt(ids.CharMAG?.value||1,1,99);
+    const resultado = mag + 5; // 15 + (MAG + 5)
+  const dobroNivel = 2 * lvl;
+    const pmCorrect = (15 + resultado) * dobroNivel; // (15 + (MAG + 5)) * (2 * lvl)
+    ids.EnergyMax.value = Math.trunc(pmCorrect);
     ["STR","MAG","TEC","AGI","VIT","LCK"].forEach(k=>{
       const el = document.getElementById("b"+k);
       if(el && ids["Char"+k]) el.textContent = ids["Char"+k].value;
