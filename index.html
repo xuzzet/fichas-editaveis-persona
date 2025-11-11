@@ -102,7 +102,12 @@
             <div><label>Pontos de Aspecto</label><input id="AspectPoints" type="number" min="0" max="99" value="0"/></div>
           </div>
           <div class="row row2">
-            <div><label>Buffs/Condições</label><input id="Buffs" placeholder="Buffs ou condições"/></div>
+            <div style="position:relative">
+              <label style="display:flex;align-items:center;gap:8px;">Buffs/Condições
+                <button type="button" class="mini expand-btn" data-target="Buffs">⤡</button>
+              </label>
+              <textarea id="Buffs" class="expandable" placeholder="Buffs ou condições"></textarea>
+            </div>
           </div>
         </section>
 
@@ -113,7 +118,12 @@
             <div><label>Convicção</label><input id="Conviction" placeholder="Convicção"/></div>
           </div>
           <div class="row row2">
-            <div><label>Habilidade Natural</label><input id="NaturalSkill" placeholder="Habilidade natural"/></div>
+            <div style="position:relative">
+              <label style="display:flex;align-items:center;gap:8px;">Habilidade Natural
+                <button type="button" class="mini expand-btn" data-target="NaturalSkill">⤡</button>
+              </label>
+              <textarea id="NaturalSkill" class="expandable" placeholder="Habilidade natural"></textarea>
+            </div>
             <div><label>Nível</label><input id="PerLvl" type="number" min="1" max="99" value="1"/></div>
           </div>
           <div class="row row2">

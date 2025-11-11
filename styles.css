@@ -141,6 +141,22 @@ body.theme-degrade {
   z-index: 100;
   box-shadow: 0 2px 8px #0005;
 }
+/* Expandable textarea */
+.expandable {
+  min-height: 48px;
+  max-height: 240px;
+  resize: vertical;
+  transition: max-height 0.18s ease, min-height 0.18s ease;
+}
+.expandable.expanded {
+  min-height: 160px;
+  max-height: 800px;
+}
+.expand-btn {
+  padding: 4px 8px;
+  font-size: 13px;
+  line-height: 1;
+}
 html,
 body {
   height: 100%;

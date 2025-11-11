@@ -202,6 +202,23 @@ function initApp() {
   initApp();
   // ...existing code...
 
+  // ===== Expand buttons for textareas =====
+  function initExpandButtons(){
+    Array.from(document.querySelectorAll('.expand-btn')).forEach(btn=>{
+      const targetId = btn.dataset.target;
+      const target = document.getElementById(targetId);
+      if(!target) return;
+      btn.addEventListener('click', ()=>{
+        target.classList.toggle('expanded');
+        btn.textContent = target.classList.contains('expanded') ? '⤢' : '⤡';
+        // focus the textarea when expanded
+        if(target.classList.contains('expanded')) target.focus();
+      });
+    });
+  }
+  // initialize after seed
+  initExpandButtons();
+
   function clampInt(n,min,max){ n=Math.trunc(+n||0); return Math.min(max,Math.max(min,n)); }
 
   function recalc(){
