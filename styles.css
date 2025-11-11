@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap");
+
 /* Feedback visual para erro de campo obrigatório */
 .input-error {
   border: 2px solid var(--danger) !important;
@@ -11,8 +13,9 @@ body.theme-padrao {
   --bg-2: #070e21;
   --bg-3: #0a1430;
   --stroke: #1a2f57;
-  --accent: #00caff;
-  --accent-2: #5ef7d4;
+  /* Persona 3 style blue */
+  --accent: #2ea4ff; /* primary blue */
+  --accent-2: #88dfff; /* lighter cyan for accents */
   --danger: #ff4b6e;
   --ok: #60f5a1;
 }
@@ -21,12 +24,12 @@ body.theme-padrao {
   background-color: var(--bg);
   background-image: radial-gradient(
       1000px 600px at 80% 0%,
-      rgba(0, 202, 255, 0.18),
+      rgba(46, 164, 255, 0.18),
       transparent 60%
     ),
     radial-gradient(
       1200px 700px at 0% 100%,
-      rgba(94, 247, 212, 0.1),
+      rgba(136, 223, 255, 0.09),
       transparent 60%
     ),
     linear-gradient(180deg, #070d1b 0%, #051022 60%, #04101e 100%);
@@ -102,8 +105,8 @@ body.theme-degrade {
   --bg-2: #070e21;
   --bg-3: #0a1430;
   --stroke: #1a2f57;
-  --accent: #00caff;
-  --accent-2: #5ef7d4;
+  --accent: #2ea4ff;
+  --accent-2: #88dfff;
   --danger: #ff4b6e;
   --ok: #60f5a1;
   --radius: 18px;
@@ -112,7 +115,7 @@ body.theme-degrade {
   --mobile-font: 15px;
   --tooltip-bg: #222b;
   --tooltip-color: #fff;
-  --tooltip-border: #00caff;
+  --tooltip-border: #2ea4ff;
 }
 * {
   box-sizing: border-box;
@@ -167,12 +170,12 @@ body {
   background-color: #030712; /* fallback solid */
   background-image: radial-gradient(
       1000px 600px at 80% 0%,
-      rgba(0, 202, 255, 0.18),
+      rgba(46, 164, 255, 0.18),
       transparent 60%
     ),
     radial-gradient(
       1200px 700px at 0% 100%,
-      rgba(94, 247, 212, 0.1),
+      rgba(136, 223, 255, 0.09),
       transparent 60%
     ),
     linear-gradient(180deg, #070d1b 0%, #051022 60%, #04101e 100%);
@@ -189,9 +192,9 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed, fixed, fixed; /* parallax-like stability */
   background-size: cover, cover, cover;
-  font: 500 16px/1.45 Inter, "Noto Sans JP", system-ui, -apple-system, Segoe UI,
-    Roboto, Helvetica, Arial;
-  -webkit-tap-highlight-color: rgba(0, 202, 255, 0.2);
+  font: 500 16px/1.45 "Montserrat", Inter, "Noto Sans JP", system-ui,
+    -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+  -webkit-tap-highlight-color: rgba(46, 164, 255, 0.2);
   overscroll-behavior-y: contain;
 }
 .wrap {
@@ -286,7 +289,7 @@ body {
   border-radius: 2px;
   background: linear-gradient(180deg, var(--accent), var(--accent-2));
   transform: skewX(-18deg);
-  box-shadow: 0 0 16px rgba(0, 202, 255, 0.8);
+  box-shadow: 0 0 16px rgba(46, 164, 255, 0.8);
 }
 .brand {
   padding: 14px 18px 12px;
@@ -340,7 +343,8 @@ body {
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-family: "Barlow Condensed", Inter, sans-serif;
+  font-family: "Montserrat", "Rodin", "New Rodin", "Barlow Condensed", Inter,
+    sans-serif;
   clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
   transition: border 0.18s ease, box-shadow 0.18s ease, transform 0.06s ease,
     background 0.2s, color 0.2s;
@@ -357,11 +361,11 @@ body {
 }
 .tab:hover {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(0, 202, 255, 0.18) inset;
+  box-shadow: 0 0 0 2px rgba(46, 164, 255, 0.18) inset;
 }
 .tab.active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(0, 202, 255, 0.3) inset;
+  box-shadow: 0 0 0 2px rgba(46, 164, 255, 0.3) inset;
 }
 .tab.active::after {
   opacity: 0.9;
@@ -407,7 +411,11 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(120deg, rgba(0, 202, 255, 0.08), transparent 35%);
+  background: linear-gradient(
+    120deg,
+    rgba(46, 164, 255, 0.08),
+    transparent 35%
+  );
   clip-path: polygon(0 0, 75% 0, 65% 100%, 0 100%);
   border-radius: var(--radius);
 }
@@ -438,7 +446,7 @@ body {
       rgba(255, 255, 255, 0.25) 0 2px,
       transparent 2px 8px
     );
-  box-shadow: 0 0 10px rgba(0, 202, 255, 0.35) inset;
+  box-shadow: 0 0 10px rgba(46, 164, 255, 0.35) inset;
 }
 label {
   display: block;
@@ -468,7 +476,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0, 202, 255, 0.28),
+  box-shadow: 0 0 0 3px rgba(46, 164, 255, 0.28),
     inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 textarea {
@@ -528,7 +536,7 @@ textarea {
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #bff, var(--accent));
   border: 2px solid #0b1636;
-  box-shadow: 0 0 12px rgba(0, 202, 255, 0.45);
+  box-shadow: 0 0 12px rgba(46, 164, 255, 0.45);
 }
 .badge {
   text-align: center;
@@ -570,13 +578,13 @@ textarea {
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
   font-family: "Barlow Condensed", Inter, sans-serif;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), 0 0 18px rgba(0, 202, 255, 0.3);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), 0 0 18px rgba(46, 164, 255, 0.3);
 }
 .value.pv {
   color: #5ef7d4;
 }
 .value.en {
-  color: #00caff;
+  color: #2ea4ff;
 }
 table {
   width: 100%;
@@ -657,7 +665,7 @@ button {
 }
 button:hover {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(0, 202, 255, 0.2) inset;
+  box-shadow: 0 0 0 2px rgba(46, 164, 255, 0.2) inset;
 }
 .hint {
   color: var(--ink-dim);
@@ -703,9 +711,9 @@ button:hover {
   margin-bottom: 8px;
 }
 .feitos-msg.info {
-  background: rgba(0, 202, 255, 0.08);
+  background: rgba(46, 164, 255, 0.08);
   color: var(--accent-2);
-  border: 1px solid rgba(0, 202, 255, 0.12);
+  border: 1px solid rgba(46, 164, 255, 0.12);
 }
 .feitos-msg.warn {
   background: rgba(255, 75, 110, 0.06);
@@ -793,11 +801,146 @@ button:hover {
     min-height: 56px;
   }
 }
+
+/* Menu visual enhancements: vibrant gradients, diagonal overlays and decorative glow */
+.tabs {
+  position: relative;
+  z-index: 2; /* keep tabs above decorative background */
+  padding: 6px 2px;
+}
+.tabs::before {
+  content: "";
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  top: -36%;
+  height: 160%;
+  background: linear-gradient(
+    135deg,
+    rgba(46, 164, 255, 0.14),
+    rgba(136, 223, 255, 0.06)
+  );
+  transform: skewY(-8deg);
+  z-index: 0;
+  filter: blur(20px);
+  border-radius: 22px;
+  pointer-events: none;
+}
+.brand {
+  overflow: visible; /* allow decorative pseudo-elements to extend */
+}
+.brand::after {
+  content: "";
+  position: absolute;
+  right: -8%;
+  top: -24%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(46, 164, 255, 0.12),
+    transparent 32%
+  );
+  transform: rotate(16deg);
+  z-index: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.tab {
+  position: relative;
+  z-index: 3;
+  font-family: "Rodin", "New Rodin", "Barlow Condensed", Inter, sans-serif;
+  background-image: linear-gradient(
+      180deg,
+      rgba(46, 164, 255, 0.04),
+      transparent 50%
+    ),
+    linear-gradient(180deg, var(--bg-3), var(--bg-2));
+  border-radius: 10px;
+}
+.tab::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  transform: skewX(-12deg);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  opacity: 0.95;
+}
+.tab.active {
+  box-shadow: 0 8px 30px rgba(46, 164, 255, 0.14);
+  background-image: linear-gradient(
+      180deg,
+      rgba(46, 164, 255, 0.12),
+      rgba(136, 223, 255, 0.02)
+    ),
+    linear-gradient(180deg, var(--bg-3), var(--bg-2));
+}
+
+@media (max-width: 720px) {
+  .tabs::before {
+    top: -50%;
+    filter: blur(14px);
+  }
+  .brand::after {
+    width: 260px;
+    height: 260px;
+    right: -18%;
+    top: -36%;
+    opacity: 0.9;
+  }
+  .tab::before {
+    width: 6px;
+  }
+}
 @media print {
   @page {
     size: A4;
     margin: 12mm;
   }
+
+  /* Utility font classes: Montserrat weights */
+  .montserrat-300 {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+  }
+  .montserrat-400 {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .montserrat-500 {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+  }
+  .montserrat-600 {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+  }
+  .montserrat-700 {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+  }
+  .montserrat-800 {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+  }
+
   body {
     background: #fff;
     color: #000;
