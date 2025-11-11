@@ -298,7 +298,12 @@ function buildFeitosUI(){
 
 // ===== Habilidades Sociais: UI e lógica de tiers =====
 function buildSocialUI(){
-  const MAX_POINTS = 7;
+  // Inicialmente o jogador recebe 7 pontos para distribuir.
+  // O limite total possível (5 pontos × 5 tiers) é 25.
+  const INITIAL_SOCIAL_POINTS = 7;
+  const MAX_POINTS = 25;
+  // socialPool é o total atualmente disponível para distribuir. Pode ser aumentado por feitos/efeitos.
+  let socialPool = INITIAL_SOCIAL_POINTS;
   const idsList = ['KNOPts','DISPts','EMPpts','EXPPts','COUPts','CHAPts'];
   const skillMeta = {
     KNOPts: {name:'Conhecimento', titles:['Preguiçoso','Ciente','Sabido','Estudado','Enciclopédico','Erudito'], desc:[
@@ -354,6 +359,8 @@ function buildSocialUI(){
   const container = document.getElementById('social-tier-list');
   const remainingEl = document.getElementById('social-remaining');
   const msgEl = document.getElementById('social-msg');
+  const poolInput = document.getElementById('socialPoolInput');
+  const poolDisplay = document.getElementById('social-pool-display');
   if(!container || !remainingEl) return;
 
   // build initial UI blocks
@@ -370,34 +377,35 @@ function buildSocialUI(){
   idsList.forEach(id=> prev[id] = Number(document.getElementById(id)?.value||0));
 
   function updateAll(){
-    const values = idsList.map(id=> clampInt(Number(document.getElementById(id).value||0),0,10));
+    // allow 0..MAX_POINTS per input
+    const values = idsList.map(id=> clampInt(Number(document.getElementById(id).value||0),0,MAX_POINTS));
     const sum = values.reduce((a,b)=>a+b,0);
-    if(sum > MAX_POINTS){
-      // clamp last-changed by reducing it to allowed
-      msgEl.textContent = 'Você só tem 7 pontos para distribuir. Ajustando automaticamente.';
+    if(sum > socialPool){
+      msgEl.textContent = `Você só tem ${socialPool} pontos para distribuir (máx ${MAX_POINTS}). Ajustando automaticamente.`;
       setTimeout(()=>{ if(msgEl) msgEl.textContent=''; }, 3500);
-      // try to reduce values proportionally: we'll reduce the last focused field if possible
     }
-    // enforce per-input allowed = MAX_POINTS - sumOther
+    // enforce per-input allowed = socialPool - sumOther
     idsList.forEach((id, idx)=>{
       const el = document.getElementById(id);
       if(!el) return;
       const otherSum = sum - Number(el.value||0);
-      const allowed = Math.max(0, MAX_POINTS - otherSum);
+      const allowed = Math.max(0, socialPool - otherSum);
       if(Number(el.value) > allowed){ el.value = allowed; }
       prev[id] = Number(el.value||0);
       // update tier display
-      const tier = Math.min(5, Math.max(0, Number(el.value)||0));
+      const points = Math.max(0, Number(el.value)||0);
+      const tier = Math.min(5, Math.floor(points / 5));
       const meta = skillMeta[id];
       const tierEl = document.getElementById(id+'-tier');
       const shortEl = document.getElementById(id+'-short');
       const descEl = document.getElementById(id+'-desc');
-      if(tierEl) tierEl.textContent = `Tier ${tier} — ${meta.titles[tier] || meta.titles[meta.titles.length-1]}`;
-      if(shortEl) shortEl.textContent = meta.desc[tier] ? meta.desc[tier].split('\n')[0] : '';
-      if(descEl) descEl.textContent = meta.desc[tier] || '';
+      if(tierEl) tierEl.textContent = `Tier ${tier} — ${meta.titles[tier] || meta.titles[meta.titles.length-1]} (${points} pts)`;
+  // shortEl should be a brief title/summary to avoid duplicating the full description
+  if(shortEl) shortEl.textContent = meta.titles[tier] || '';
+  if(descEl) descEl.textContent = meta.desc[tier] || '';
     });
     const newSum = idsList.reduce((s,id)=> s + Number(document.getElementById(id).value||0), 0);
-    remainingEl.textContent = Math.max(0, MAX_POINTS - newSum);
+    remainingEl.textContent = Math.max(0, socialPool - newSum);
   }
 
   // attach listeners
@@ -407,8 +415,8 @@ function buildSocialUI(){
     el.addEventListener('focus', ()=> prev[id] = Number(el.value||0));
     el.addEventListener('input', ()=>{
       const otherSum = idsList.reduce((s,i)=> s + (i===id?0:Number(document.getElementById(i).value||0)), 0);
-      const allowed = Math.max(0, MAX_POINTS - otherSum);
-      let val = clampInt(Number(el.value||0), 0, 10);
+      const allowed = Math.max(0, socialPool - otherSum);
+      let val = clampInt(Number(el.value||0), 0, MAX_POINTS); // allow up to MAX_POINTS per field
       if(val > allowed){ el.value = allowed; }
       updateAll();
     });
@@ -416,6 +424,23 @@ function buildSocialUI(){
 
   // initial render
   updateAll();
+
+  // expose helper to change the current social pool (e.g., quando um Feito ou efeito aumentar o total)
+  window.setSocialPool = function(n){ socialPool = clampInt(Number(n)||0, 0, MAX_POINTS); if(poolInput) poolInput.value = socialPool; if(poolDisplay) poolDisplay.textContent = socialPool; updateAll(); return socialPool; };
+  window.getSocialPool = function(){ return socialPool; };
+
+  // wire optional UI control to change total social pool
+  if(poolInput){
+    // ensure initial value
+    poolInput.value = socialPool;
+    if(poolDisplay) poolDisplay.textContent = socialPool;
+    poolInput.addEventListener('input', ()=>{
+      const v = clampInt(Number(poolInput.value||0), 0, MAX_POINTS);
+      window.setSocialPool(v);
+      if(poolInput) poolInput.value = v;
+      if(poolDisplay) poolDisplay.textContent = v;
+    });
+  }
 }
 
 (function(){
@@ -439,11 +464,9 @@ function buildSocialUI(){
   // initialize after seed
   initExpandButtons();
 
-  function clampInt(n,min,max){ n=Math.trunc(+n||0); return Math.min(max,Math.max(min,n)); }
-
   function recalc(){
     const lvl = clampInt(ids.CharLvl?.value||1,1,99);
-    const vit = clampInt(ids.CharVIT?.value||1,1,5);
+  const vit = clampInt(ids.CharVIT?.value||1,1,12);
     ids.MaxHP.value = 25 + ((5 + vit) * lvl);
   // Mana (PM) = 15 + ((MAG + 5) * (Dobro do Nível))
   // calcular Resultado = (MAG + 5) e então multiplicar por (2 * nível)
@@ -457,7 +480,7 @@ function buildSocialUI(){
       if(el && ids["Char"+k]) el.textContent = ids["Char"+k].value;
     });
   }
-  [ids.CharLvl, ids.CharVIT, ids.CharAGI, ids.CharSTR, ids.CharMAG, ids.CharTEC, ids.CharLCK].forEach(el=> el.addEventListener("input", recalc));
+  [ids.CharLvl, ids.CharVIT, ids.CharAGI, ids.CharSTR, ids.CharMAG, ids.CharTEC, ids.CharLCK].forEach(el=>{ if(el) el.addEventListener("input", recalc); });
   recalc();
 
   // ====== Equipamentos ======
@@ -599,21 +622,22 @@ function buildSocialUI(){
         MaxHP: ids.MaxHP?.value||"", EnergyMax: ids.EnergyMax?.value||"", DmgRed: ids.DmgRed?.value||"",
         KNOPts: ids.KNOPts?.value||"", DISPts: ids.DISPts?.value||"", EMPpts: ids.EMPpts?.value||"", EXPPts: ids.EXPPts?.value||"", COUPts: ids.COUPts?.value||"", CHAPts: ids.CHAPts?.value||"",
         Aspectos: ids.Aspectos?.value||"", AspectPoints: ids.AspectPoints?.value||"", Buffs: ids.Buffs?.value||"",
-        PerName: ids.PerName?.value||"", PerArcana: ids.PerArcana?.value||"", Conviction: ids.Conviction?.value||"", NaturalSkill: ids.NaturalSkill?.value||"", PerLvl: ids.PerLvl?.value||"", PerSP: ids.PerSP?.value||"", PerTypes: ids.PerTypes?.value||"",
+        PerName: ids.PerName?.value||"", PerArcana: ids.PerArcana?.value||"", PerLvl: ids.PerLvl?.value||"", PerNotes: ids.PerNotes?.value||"", PerSP: ids.PerSP?.value||"", PerTypes: ids.PerTypes?.value||"",
         Weapon: ids.Weapon?.value||"", WeaponDmg: ids.WeaponDmg?.value||"", WeaponReach: ids.WeaponReach?.value||"", WeaponEffect: ids.WeaponEffect?.value||"",
         Armor: ids.Armor?.value||"", ArmorDmgRed: ids.ArmorDmgRed?.value||"", ArmorEffect: ids.ArmorEffect?.value||"",
         Accessory: ids.Accessory?.value||"", AccessoryEffect: ids.AccessoryEffect?.value||"",
         Resistances: ids.Resistances?.value||""
       },
-      persona: { PerName: ids.PerName?.value||"", PerArcana: ids.PerArcana?.value||"", PerLvl: ids.PerLvl?.value||"", PerNotes: ids.PerNotes?.value||"", PerSP: ids.PerSP?.value||"", PerTypes: ids.PerTypes?.value||"" },
+      persona: { PerName: ids.PerName?.value||"", PerArcana: ids.PerArcana?.value||"", PerLvl: ids.PerLvl?.value||1, PerNotes: ids.PerNotes?.value||"", PerSP: ids.PerSP?.value||0, PerTypes: ids.PerTypes?.value||"" },
       affinities: affin,
       spells: getSpells(),
-  feitos: (window.getFeitos? window.getFeitos() : []),
+      feitos: (window.getFeitos? window.getFeitos() : []),
       equip: getEquip(),
       links: getLinks(),
       notes: { diary: ids.NotesDiary?.value||"", goals: ids.NotesGoals?.value||"", clues: getClues(), contacts: getCtts() },
       portrait: { src: portraitSrc },
-      background: background
+      background: background,
+      socialPool: (window.getSocialPool ? window.getSocialPool() : 7) // persist current social pool (initial 7, max 25)
     };
   }
   function applySnapshot(data){
@@ -674,6 +698,12 @@ function buildSocialUI(){
     Object.entries(data.background).forEach(([id,val])=>{ const el = document.getElementById(id); if(el) el.value = val; });
   }
 
+  // restore social pool if present
+  try{
+    if(typeof window.setSocialPool === 'function' && data.socialPool != null){
+      window.setSocialPool(Number(data.socialPool));
+    }
+  }catch(e){}
   recalc();
   }
 
@@ -696,37 +726,40 @@ function buildSocialUI(){
 
   // ====== PDF ======
   document.getElementById("fill").addEventListener("click", ()=> document.getElementById("pdfFile").click());
-  document.getElementById("pdfFile").addEventListener("change", async (ev)=>{
+  const pdfFileEl = document.getElementById("pdfFile");
+  if(pdfFileEl) pdfFileEl.addEventListener("change", async (ev)=>{
     const file = ev.target.files[0]; if(!file) return;
     const ab = await file.arrayBuffer(); const pdfDoc = await PDFLib.PDFDocument.load(ab); const form = pdfDoc.getForm();
     function setTxt(name, val){ try{ const field=form.getField(name); if(field.setText) field.setText(String(val??"")); else if(field.select) field.select(String(val??"")); }catch(e){} }
-    const s = snapshot(); const g=s.geral; const p=s.persona; const n=s.notes;
+    const s = snapshot(); const g = s.acessoRapido || {}; const p = s.persona || {}; const n = s.notes || {};
     const map = {
-      CharName:g.CharName, CharPlayer:g.CharPlayer, CharAlias:g.CharAlias, CharClass:g.CharClass, CharLvl:g.CharLvl, CharArcana:g.CharArcana,
-      CharSTR:g.CharSTR, CharMAG:g.CharMAG, CharTEC:g.CharTEC, CharAGI:g.CharAGI, CharVIT:g.CharVIT, CharLCK:g.CharLCK,
-      MaxHP:g.MaxHP, EnergyMax:g.EnergyMax, DmgRed:g.DmgRed,
-      KNOPts:g.KNOPts, DISPts:g.DISPts, EMPpts:g.EMPpts, CHAPts:g.CHAPts, EXPPts:g.EXPPts, COUPts:g.COUPts,
-      PerName:p.PerName, PerArcana:p.PerArcana, PerLvl:p.PerLvl, PerNotes:p.PerNotes,
-      EquipList: s.equip.map(e=>`[${e.tipo}] ${e.nome} — ${e.efeito}`).join("\n"),
-      SpellList: s.spells.map(sp=>`${sp.nome} (${sp.tipo}, ${sp.custo}) — ${sp.efeito}`).join("\n"),
-      LinksList: s.links.map(l=>`${l.nome} — ${l.arcana} Rk.${l.rank} ${l.obs?('— '+l.obs):''}`).join("\n"),
-      NotesDiary: n.diary, NotesGoals: n.goals,
+      CharName: g.PerName || g.CharPlayer || '', CharPlayer: g.CharPlayer || '', CharClass: g.CharClass || '', CharLvl: g.CharLvl || '', CharArcana: g.CharArcana || '',
+      CharSTR: g.CharSTR || '', CharMAG: g.CharMAG || '', CharTEC: g.CharTEC || '', CharAGI: g.CharAGI || '', CharVIT: g.CharVIT || '', CharLCK: g.CharLCK || '',
+      MaxHP: g.MaxHP || '', EnergyMax: g.EnergyMax || '', DmgRed: g.DmgRed || '',
+      KNOPts: g.KNOPts || '', DISPts: g.DISPts || '', EMPpts: g.EMPpts || '', CHAPts: g.CHAPts || '', EXPPts: g.EXPPts || '', COUPts: g.COUPts || '',
+      PerName: p.PerName || g.PerName || '', PerArcana: p.PerArcana || g.PerArcana || '', PerLvl: p.PerLvl || g.PerLvl || '', PerNotes: p.PerNotes || g.PerNotes || '',
+      EquipList: (s.equip||[]).map(e=>`[${e.tipo}] ${e.nome} — ${e.efeito}`).join("\n"),
+      SpellList: (s.spells||[]).map(sp=>`${sp.nome} (${sp.tipo}, ${sp.custo}) — ${sp.efeito}`).join("\n"),
+      LinksList: (s.links||[]).map(l=>`${l.nome} — ${l.arcana} Rk.${l.rank} ${l.obs?('— '+l.obs):''}`).join("\n"),
+      NotesDiary: n.diary || '', NotesGoals: n.goals || '',
       NotesClues: (n.clues||[]).map(c=>`• ${c.titulo}: ${c.desc} [${c.evid}] (${c.status})`).join("\n"),
       NotesContacts: (n.contacts||[]).map(c=>`• ${c.nome} (${c.tipo}) — ${c.obs}`).join("\n")
     };
-    const AF_MAP = {"Físico":"AF_Fisico","Fogo":"AF_Fogo","Gelo":"AF_Gelo","Vento":"AF_Vento","Raio":"AF_Raio","Nuclear":"AF_Nuclear","PSY":"AF_PSY","Luz":"AF_Luz","Trevas":"AF_Trevas"};
-    Object.entries(AF_MAP).forEach(([k,campo])=> setTxt(campo, p.affin?.[k] || 'Normal'));
+    const AF_MAP = {"Físico":"AF_Fisico","Fogo":"AF_Fogo","Gelo":"AF_Gelo","Vento":"AF_Vento","Raio":"AF_Raio","Nuclear":"AF_Nuclear","PSY":"AF_PSY","Luz":"AF_Luz","Trevas":"AF_Trevas","Onipotente":"AF_Onipotente"};
+    // use saved affinities if present
+    Object.entries(AF_MAP).forEach(([k,campo])=> setTxt(campo, (s.affinities && s.affinities[k]) || 'Normal'));
     Object.entries(map).forEach(([k,v])=> setTxt(k,v));
 
     const filled = await pdfDoc.save(); const blob = new Blob([filled], {type:"application/pdf"}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(g.CharName||'ficha')+" - Preenchida.pdf"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   });
 
   // ====== PNG ======
-  document.getElementById("png").addEventListener("click", async ()=>{
+  const pngBtn = document.getElementById("png");
+  if(pngBtn) pngBtn.addEventListener("click", async ()=>{
     if(typeof html2canvas!=="function"){ alert("html2canvas bloqueado no preview. Teste local."); return; }
     const node = document.getElementById('captureRoot');
     const canvas = await html2canvas(node, {backgroundColor:null, scale:2, useCORS:true});
-    canvas.toBlob((blob)=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(ids.CharName.value||'ficha')+".png"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); });
+    canvas.toBlob((blob)=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=((ids.CharPlayer?.value||'ficha')+".png"); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); });
   });
 
   // ====== PRINT ======
@@ -736,27 +769,28 @@ function buildSocialUI(){
   function runTests(){
     const out = document.getElementById('tests-out');
     const card = document.getElementById('tests-card');
-    card.style.display = 'block';
+    if(card) card.style.display = 'block';
     const logs = [];
     function ok(name, cond, expect, got){ logs.push(`${cond?'✅':'❌'} ${name}${cond?'':` — esperado ${expect}, obtido ${got}`}`); }
 
     const backup = snapshot();
 
     ids.CharLvl.value = 1; ids.CharVIT.value = 1; ids.CharAGI.value = 2; recalc();
-    ok('PV lvl1/VIT1 = 31', Number(ids.MaxHP.textContent) === 31, 31, ids.MaxHP.textContent);
-    ok('EN lvl1/VIT1 = 1', Number(ids.EnergyMax.textContent) === 1, 1, ids.EnergyMax.textContent);
+    ok('PV lvl1/VIT1 = 31', Number(ids.MaxHP.value) === 31, 31, ids.MaxHP.value);
+    ok('EN lvl1/VIT1 = 1', Number(ids.EnergyMax.value) === 1, 1, ids.EnergyMax.value);
 
     ids.CharLvl.value = 10; ids.CharVIT.value = 4; ids.CharAGI.value = 3; recalc();
-    ok('PV lvl10/VIT4 = 115', Number(ids.MaxHP.textContent) === 115, 115, ids.MaxHP.textContent);
-    ok('EN lvl10/VIT4 = 9', Number(ids.EnergyMax.textContent) === 9, 9, ids.EnergyMax.textContent);
-    ok('Init = AGI', Number(ids.Init.value) === 3, 3, ids.Init.value);
+    ok('PV lvl10/VIT4 = 115', Number(ids.MaxHP.value) === 115, 115, ids.MaxHP.value);
+    ok('EN lvl10/VIT4 = 9', Number(ids.EnergyMax.value) === 9, 9, ids.EnergyMax.value);
+    // Init field not present; check AGI badge instead
+    ok('Init = AGI (badge bAGI)', Number(document.getElementById('bAGI')?.textContent||0) === 3, 3, document.getElementById('bAGI')?.textContent||'');
 
     const afCount = document.querySelectorAll('[id^="AF_"]').length;
     ok('Afinidades — 9 selects', afCount === 9, 9, afCount);
 
     applySnapshot(backup);
 
-    out.innerHTML = logs.map(l=>`<div>${l}</div>`).join('');
+    if(out) out.innerHTML = logs.map(l=>`<div>${l}</div>`).join('');
   }
   document.getElementById('tests').addEventListener('click', runTests);
 

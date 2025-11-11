@@ -63,16 +63,16 @@
 
         <section class="card">
           <div class="section-title"><div class="bar"></div><h2>Combate</h2></div>
-          <div class="hint" style="margin-bottom:8px;">Distribua <b>18 pontos</b> entre as suas Habilidades de Combate.<br>O valor mínimo para cada Habilidade de Combate é <b>1</b>; o valor máximo inicial para cada Habilidade de Combate é <b>5</b>.</div>
+          <div class="hint" style="margin-bottom:8px;">Distribua <b>18 pontos</b> entre as suas Habilidades de Combate.<br>O valor mínimo para cada Habilidade de Combate é <b>1</b>; o valor máximo por Habilidade é <b>12</b>.</div>
           <div class="row row3">
-            <div><label>STR</label><input id="CharSTR" type="range" min="1" max="5" value="1"><span class="badge" id="bSTR">1</span></div>
-            <div><label>MAG</label><input id="CharMAG" type="range" min="1" max="5" value="1"><span class="badge" id="bMAG">1</span></div>
-            <div><label>TEC</label><input id="CharTEC" type="range" min="1" max="5" value="1"><span class="badge" id="bTEC">1</span></div>
+            <div><label>STR</label><input id="CharSTR" type="range" min="1" max="12" value="1"><span class="badge" id="bSTR">1</span></div>
+            <div><label>MAG</label><input id="CharMAG" type="range" min="1" max="12" value="1"><span class="badge" id="bMAG">1</span></div>
+            <div><label>TEC</label><input id="CharTEC" type="range" min="1" max="12" value="1"><span class="badge" id="bTEC">1</span></div>
           </div>
           <div class="row row3">
-            <div><label>AGI</label><input id="CharAGI" type="range" min="1" max="5" value="1"><span class="badge" id="bAGI">1</span></div>
-            <div><label>VIT</label><input id="CharVIT" type="range" min="1" max="5" value="1"><span class="badge" id="bVIT">1</span></div>
-            <div><label>LCK</label><input id="CharLCK" type="range" min="1" max="5" value="1"><span class="badge" id="bLCK">1</span></div>
+            <div><label>AGI</label><input id="CharAGI" type="range" min="1" max="12" value="1"><span class="badge" id="bAGI">1</span></div>
+            <div><label>VIT</label><input id="CharVIT" type="range" min="1" max="12" value="1"><span class="badge" id="bVIT">1</span></div>
+            <div><label>LCK</label><input id="CharLCK" type="range" min="1" max="12" value="1"><span class="badge" id="bLCK">1</span></div>
           </div>
           <div class="row row3">
             <div><label>Pontos de Vida</label><input id="MaxHP" readonly/></div>
@@ -83,7 +83,11 @@
 
         <section class="card">
           <div class="section-title"><div class="bar"></div><h2>Habilidades Sociais</h2></div>
-          <div class="hint" style="margin-bottom:8px;">Distribua <b>7 pontos</b> entre as suas Habilidades Sociais.</div>
+          <div class="hint" style="margin-bottom:8px;">Distribua pontos entre as suas Habilidades Sociais. Total inicial: <strong id="social-pool-display">7</strong> (máx 25).</div>
+            <div class="row" style="align-items:center;gap:8px;margin-top:6px;">
+              <div style="flex:1"><label>Pontos Sociais (total)</label><input id="socialPoolInput" type="number" min="1" max="25" value="7" style="width:120px;padding:8px;"/></div>
+              <div style="font-size:13px;color:var(--ink-dim);margin-left:8px;">Ajuste o total disponível para distribuir. (Padrão: 7)</div>
+            </div>
           <div class="row row3">
             <div><label>Conhecimento</label><input id="KNOPts" type="number" min="0" max="10" value="0"/></div>
             <div><label>Disciplina</label><input id="DISPts" type="number" min="0" max="10" value="0"/></div>
