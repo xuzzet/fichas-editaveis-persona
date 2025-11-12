@@ -503,52 +503,28 @@ function buildSocialUI(){
   const spellBody = $("#tbl-spell tbody");
   $("#add-spell").addEventListener("click", ()=> addSpell());
     function addSpell(data={nome:"", tipo:"Físico", custo:"", efeito:""}){
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td><input class="sp-n" placeholder="Magia/Técnica"/></td>
+    const tr = document.createElement("tr");
+  tr.innerHTML = `<td><textarea class="sp-n" rows="1" placeholder="Magia/Técnica" style="width:100%;resize:vertical"></textarea></td>
           <td><input class="sp-c" placeholder="Alvo"/></td>
           <td><select class="sp-t"></select></td>
-          <td><input class="sp-e" placeholder="Efeito"/></td>
+          <td><textarea class="sp-e" rows="2" placeholder="Efeito" style="width:100%;resize:vertical"></textarea></td>
           <td><input class="sp-tier" placeholder="Nível"/></td>
           <td><input class="sp-uses" placeholder="Usos"/></td>
-          <td><input type="file" accept="image/*" class="sp-repr" style="display:none"/><button class="mini icone-btn">Selecionar Ícone</button><span class="icone-preview"></span></td>
           <td class="row-actions"><button class="mini del">Remover</button></td>`;
-  // Lógica para upload e preview do ícone
-  const fileInput = tr.querySelector('.sp-repr');
-  const btn = tr.querySelector('.icone-btn');
-  const preview = tr.querySelector('.icone-preview');
-  btn.addEventListener('click', ()=> fileInput.click());
-  fileInput.addEventListener('change', ()=> {
-    const file = fileInput.files[0];
-    if(file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        preview.innerHTML = `<img src='${e.target.result}' alt='ícone' style='max-width:32px;max-height:32px;border-radius:6px;'/>`;
-        // store as attribute so snapshot can read it
-        preview.dataset.repr = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      preview.innerHTML = '';
-      preview.dataset.repr = '';
-    }
-  });
       spellBody.appendChild(tr);
       const tsel = tr.querySelector('.sp-t'); 
       ["Físico","Fogo","Gelo","Vento","Raio","Nuclear","PSY","Luz","Trevas","Suporte","Controle"].forEach(t=>{ 
         const o=document.createElement('option'); o.textContent=t; tsel.appendChild(o); 
       });
-      tr.querySelector('.sp-n').value = data.nome||""; 
+      // support both textarea and input fallback for older snapshots
+      const nameEl = tr.querySelector('.sp-n');
+      if(nameEl) nameEl.value = data.nome||"";
       tsel.value = data.tipo||"Físico"; 
       tr.querySelector('.sp-c').value = data.custo||""; 
       tr.querySelector('.sp-e').value = data.efeito||""; 
-      // if the spell data contains a representation (data URL), restore preview
-      if (data.repr) {
-        preview.innerHTML = `<img src='${data.repr}' alt='ícone' style='max-width:32px;max-height:32px;border-radius:6px;'/>`;
-        preview.dataset.repr = data.repr;
-      }
       tr.querySelector('.del').addEventListener('click', ()=> tr.remove());
   }
-  function getSpells(){ return Array.from(spellBody.querySelectorAll('tr')).map(tr=>({ nome: tr.querySelector('.sp-n').value, tipo: tr.querySelector('.sp-t').value, custo: tr.querySelector('.sp-c').value, efeito: tr.querySelector('.sp-e').value, repr: tr.querySelector('.icone-preview')?.dataset?.repr||'' })); }
+  function getSpells(){ return Array.from(spellBody.querySelectorAll('tr')).map(tr=>({ nome: (tr.querySelector('.sp-n')?.value||''), tipo: tr.querySelector('.sp-t').value, custo: tr.querySelector('.sp-c').value, efeito: (tr.querySelector('.sp-e')?.value||'') })); }
 
   // ====== Vínculos ======
   const linkBody = $("#tbl-link tbody");

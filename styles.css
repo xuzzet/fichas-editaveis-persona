@@ -606,6 +606,59 @@ td {
   max-width: 180px;
   width: 100%;
 }
+/* Melhorias visuais para Magias & Técnicas */
+#tbl-spell {
+  table-layout: fixed; /* usa larguras definidas nas colunas */
+}
+#tbl-spell td,
+#tbl-spell th {
+  vertical-align: top;
+}
+#tbl-spell textarea.sp-n,
+#tbl-spell textarea.sp-e,
+#tbl-spell input.sp-c,
+#tbl-spell input.sp-tier,
+#tbl-spell input.sp-uses {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.2;
+  box-shadow: none;
+}
+#tbl-spell textarea.sp-n {
+  min-height: 36px;
+  max-height: 160px;
+  resize: vertical;
+}
+#tbl-spell textarea.sp-e {
+  min-height: 56px;
+  max-height: 320px;
+  resize: vertical;
+}
+#tbl-spell input.sp-tier,
+#tbl-spell input.sp-uses {
+  text-align: center;
+  width: 100%;
+}
+#tbl-spell .row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 800px) {
+  /* em telas menores, permitir maior altura dos textareas e empilhar mais legivelmente */
+  #tbl-spell textarea.sp-n {
+    min-height: 48px;
+  }
+  #tbl-spell textarea.sp-e {
+    min-height: 80px;
+  }
+}
 th {
   background: var(--bg-3, #0b1738);
   font-size: 12px;
@@ -628,6 +681,14 @@ th:last-child {
   gap: 8px;
   align-items: center;
   justify-content: flex-end;
+}
+#tbl-spell .row-actions {
+  justify-content: center;
+}
+#tbl-spell .row-actions .mini {
+  padding: 6px 8px;
+  font-size: 12px;
+  white-space: nowrap;
 }
 .mini {
   padding: 6px 10px;
@@ -992,4 +1053,29 @@ button:hover {
     color: #000;
     text-shadow: none;
   }
+}
+
+/* Emergency repair: ensure tabs are visible and interactive
+   This forces pointer-events and z-index so decorative pseudo-elements
+   can't accidentally block clicks. Also ensure view visibility.
+   Kept minimal and appended to avoid disturbing existing styling. */
+.tabs {
+  position: relative !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+.tab {
+  pointer-events: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  user-select: none !important;
+}
+.view {
+  display: none !important;
+}
+.view.active {
+  display: block !important;
 }
